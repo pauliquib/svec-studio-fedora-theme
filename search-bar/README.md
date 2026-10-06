@@ -8,7 +8,7 @@ Typing opens a popup with live results powered by **KRunner** (applications, fil
 
 | Dark theme | Light theme |
 |---|---|
-| ![Dark theme](screenshots/dark-theme.png) | ![Light theme](screenshots/light-theme.png) |
+| ![Dark theme](docs/screenshots/dark-theme.png) | ![Light theme](docs/screenshots/light-theme.png) |
 
 ## Features
 
