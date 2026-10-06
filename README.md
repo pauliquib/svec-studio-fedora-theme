@@ -1,16 +1,17 @@
 # Svec Studio Fedora theme
 
-Sada nástrojů pro vzhled Fedory s KDE Plasma 6. Každá část je samostatná a dá se nainstalovat zvlášť.
+A set of tools for the look of Fedora with KDE Plasma 6. Each part is independent and can be
+installed on its own.
 
-| Složka | Co to je | Instalace |
+| Folder | What it is | Install |
 |---|---|---|
-| [`colors/`](colors) | **Panel & Window Colours** — nativní nastavení (KCM) pro barvy panelu, záhlaví oken, okraje, stíny a uložené motivy | `cd colors && ./install.sh` |
-| [`icons/`](icons) | **Outline Icons** — obrysová sada ikon (varianty Accent, White, Black) | viz [`icons/README.md`](icons/README.md) |
-| [`taskbar/`](taskbar) | **Expanding Icons Task Manager** — správce úloh jen s ikonami, které se při najetí rozbalí do štítku | `cd taskbar && ./install.sh` |
+| [`colors/`](colors) | **Panel & Window Colours**: a native System Settings module for panel, title bar, border, shadow and saved colour themes, with a live preview | `cd colors && ./install.sh` |
+| [`icons/`](icons) | **Outline Icons**: an outline icon pack in Accent, White and Black variants | see [`icons/README.md`](icons/README.md) |
+| [`taskbar/`](taskbar) | **Expanding Icons Task Manager**: an icon-only task manager whose icons expand into a label on hover | `cd taskbar && ./install.sh` |
 
-Historie jednotlivých částí byla při sloučení zachována ze samostatných repozitářů
-`svec-studio-taskbar` a `svec-studio-iconpack`.
+The history of each part was imported from the former separate repositories
+`svec-studio-taskbar` and `svec-studio-iconpack`.
 
-## Licence
+## License
 
-Každá složka má vlastní `LICENSE`.
+Each folder has its own `LICENSE`.
