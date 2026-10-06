@@ -9,6 +9,11 @@
     <entry name="launchers" type="StringList">
       <default>preferred://filemanager,preferred://browser</default>
     </entry>
+
+    <!-- Appearance: hover label -->
+    <entry name="showLabels" type="Bool">
+      <default>true</default>
+    </entry>
     <!-- 0 = window title, 1 = application name -->
     <entry name="labelSource" type="Int">
       <default>0</default>
@@ -16,32 +21,138 @@
     <entry name="maxLabelWidth" type="Int">
       <default>240</default>
     </entry>
-    <!-- 0 = derive from panel thickness -->
-    <entry name="iconSize" type="Int">
-      <default>0</default>
-    </entry>
-    <entry name="groupWindows" type="Bool">
-      <default>true</default>
-    </entry>
-    <entry name="onlyCurrentDesktop" type="Bool">
-      <default>true</default>
-    </entry>
-    <entry name="onlyCurrentScreen" type="Bool">
-      <default>true</default>
-    </entry>
-    <entry name="minimizeActive" type="Bool">
-      <default>true</default>
-    </entry>
     <entry name="showHoverPill" type="Bool">
       <default>true</default>
     </entry>
     <entry name="accentLabels" type="Bool">
       <default>false</default>
     </entry>
+    <!-- 0 normal, 1 medium, 2 demibold, 3 bold, 4 extra bold, 5 black -->
+    <entry name="labelFontWeight" type="Int">
+      <default>2</default>
+    </entry>
+    <!-- Points; 0 = theme default -->
+    <entry name="labelFontSize" type="Int">
+      <default>0</default>
+    </entry>
+
+    <!-- Appearance: readability; 0 off, 1 contrast outline, 2 backdrop, 3 both -->
+    <entry name="legibilityMode" type="Int">
+      <default>1</default>
+    </entry>
+    <!-- Contrast outline: solid width and feathered edge in px, opacity in % -->
+    <entry name="outlineWidth" type="Double">
+      <default>1.4</default>
+    </entry>
+    <entry name="outlineSoftness" type="Double">
+      <default>1.9</default>
+    </entry>
+    <entry name="outlineOpacity" type="Int">
+      <default>82</default>
+    </entry>
+    <!-- 0 automatic (opposite of the label), 1 dark, 2 light, 3 custom -->
+    <entry name="outlineColorMode" type="Int">
+      <default>0</default>
+    </entry>
+    <entry name="outlineCustomColor" type="Color">
+      <default>#000000</default>
+    </entry>
+    <entry name="backdropOpacity" type="Int">
+      <default>90</default>
+    </entry>
+
+    <!-- Appearance: previews and audio -->
+    <entry name="showPreviews" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="highlightWindows" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="audioIndicator" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="muteOnIndicatorClick" type="Bool">
+      <default>true</default>
+    </entry>
+    <!-- 0 accent color, 1 theme (dark circle), 2 glyph only, 3 outline ring -->
+    <entry name="audioBadgeStyle" type="Int">
+      <default>0</default>
+    </entry>
+    <!-- 0 small, 1 normal, 2 large -->
+    <entry name="audioBadgeSize" type="Int">
+      <default>1</default>
+    </entry>
+    <!-- 0 top right, 1 top left, 2 bottom right, 3 bottom left -->
+    <entry name="audioBadgePosition" type="Int">
+      <default>0</default>
+    </entry>
+
+    <!-- Appearance: layout -->
+    <!-- 0 = derive from panel thickness -->
+    <entry name="iconSize" type="Int">
+      <default>0</default>
+    </entry>
+    <!-- 0 small, 1 normal, 2 large -->
+    <entry name="iconSpacing" type="Int">
+      <default>1</default>
+    </entry>
+    <entry name="fillSpace" type="Bool">
+      <default>false</default>
+    </entry>
+    <!-- 0 start, 1 center, 2 end -->
+    <entry name="alignment" type="Int">
+      <default>1</default>
+    </entry>
     <entry name="reserveSpace" type="Bool">
       <default>true</default>
     </entry>
     <entry name="hidePanelBackground" type="Bool">
+      <default>false</default>
+    </entry>
+
+    <!-- Behavior -->
+    <entry name="groupWindows" type="Bool">
+      <default>true</default>
+    </entry>
+    <!-- 0 cycle, 1 Present Windows, 2 textual list -->
+    <entry name="groupedClick" type="Int">
+      <default>0</default>
+    </entry>
+    <!-- 0 manual, 1 alphabetical, 2 desktop, 3 activity, 4 horizontal window position -->
+    <entry name="sortMode" type="Int">
+      <default>0</default>
+    </entry>
+    <entry name="minimizeActive" type="Bool">
+      <default>true</default>
+    </entry>
+    <!-- 0 nothing, 1 close, 2 new instance, 3 minimize/restore, 4 toggle grouping, 5 to current desktop -->
+    <entry name="middleClick" type="Int">
+      <default>2</default>
+    </entry>
+    <!-- 0 nothing, 1 cycle through all tasks, 2 cycle through windows of the hovered task -->
+    <entry name="wheelMode" type="Int">
+      <default>0</default>
+    </entry>
+    <entry name="wheelSkipMinimized" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="onlyCurrentDesktop" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="onlyCurrentActivity" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="onlyCurrentScreen" type="Bool">
+      <default>true</default>
+    </entry>
+    <entry name="onlyMinimized" type="Bool">
+      <default>false</default>
+    </entry>
+    <entry name="unhideOnAttention" type="Bool">
+      <default>true</default>
+    </entry>
+    <!-- New tasks appear on the left -->
+    <entry name="reverseMode" type="Bool">
       <default>false</default>
     </entry>
   </group>

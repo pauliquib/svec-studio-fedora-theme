@@ -13,21 +13,36 @@ moved from HTML/CSS/JS to QML.
 
 ## Features
 
-- Icons only. The applet draws no background of its own.
+- Icons only. The applet draws no background of its own and can also hide the background of the
+  panel it sits in.
 - The hovered icon expands to show the **window title** or the **application name** (configurable).
 - The motion is continuous across the whole rail, not a per-icon hover:
   - the closest icon wins and stays sticky while you read its label;
   - icons fade out with distance;
   - neighbours are nudged outward by half of the growth.
+- **Readable on any wallpaper.** A contrast outline around icons and text, like desktop icon labels,
+  a theme-coloured backdrop behind the expanded label, or both, with adjustable strength.
 - Full task manager built on the same `TasksModel` as the stock Plasma one:
-  - pinned launchers and window grouping;
-  - filters for the current desktop, screen and activity.
-- Indicator under the icon: a short line for the active window, an orange line for a window that
-  demands attention, and a dot for running windows.
-- **Left click** activates a window. Clicking the active window minimizes it, and clicking a group
-  cycles through its windows.
-- **Middle click** starts a new instance.
-- **Right click** opens a menu with pin/unpin, minimize/restore, close and the applet settings.
+  - pinned launchers, window grouping and drag-and-drop reordering;
+  - sorting manually, alphabetically, by desktop, by activity or by window position;
+  - filters for the current desktop, activity and screen, or minimized windows only.
+- **Window previews** on hover (optional): live thumbnails of every window of the task. Click a
+  thumbnail to switch to the window, close it from the preview, and hovering a preview can
+  highlight that window and hide the others.
+- **Audio indicator**: a badge on tasks that play sound. Clicking it mutes or unmutes the task.
+  The badge follows the system accent color by default; theme circle, icon only and outline ring
+  styles, three sizes and four corners are available.
+- Indicator on the panel edge side: a short line for the active window, an orange line for a window
+  that demands attention, and a dot for running windows.
+- **Left click** activates a window. Clicking the active window minimizes it. Clicking a group
+  cycles through its windows, shows them side by side (KWin Window View) or shows a list.
+- **Middle click**, **scroll wheel** and the order of new tasks are configurable, the same way as in
+  the stock task manager.
+- **Right click** opens a menu with new instance, pin/unpin, mute, minimize, maximize, close and
+  the applet settings.
+- Dragging files over a task raises its window. Dropping files opens them with that application,
+  and dropping a `.desktop` file pins it.
+- **Meta+1…9** activates the tasks, and an auto-hiding panel shows up when a window wants attention.
 - Respects the Plasma animation speed. With animations disabled, the change is instant.
 - The motion uses real frame time, so it runs at the same speed on 60 Hz and 144 Hz screens.
 
@@ -46,27 +61,79 @@ To update, run `git pull && ./install.sh`. To uninstall, run `kpackagetool6 -t P
 
 ### Fully transparent panel
 
-Enable **Hide the background of the panel hosting this widget** in the settings. Only the panel
-that contains the widget loses its background, blur and shadow. Other panels are not affected,
-and turning the option off brings the background back.
+Enable **Hide the background of this panel** in Appearance. Only the panel that contains the
+widget loses its background, blur and shadow. Other panels are not affected, and turning the option
+off brings the background back.
 
 It works by setting the panel containment's `backgroundHints` to `NoBackground`. The Plasma shell
 (`Panel.qml`) then skips drawing the panel frame, so no extra widget or theme is needed.
 
 ## Configuration
 
+### Appearance
+
 | Option | Default |
 |---|---|
-| Label on hover: window title / application name | window title |
+| Expand the icon with a label on hover | on |
+| Label shows: window title / application name | window title |
 | Maximum label width | 240 px |
-| Icon size (0 = derived from panel thickness) | 0 |
-| Group windows of the same application | on |
-| Only windows from the current desktop / this panel's screen | on / on |
-| Clicking the active window minimizes it | on |
 | Highlight background on hover | on |
-| Labels in the system accent colour | off |
-| Reserve space for the expansion (labels never overflow the applet edge) | on |
-| Hide the background of the panel hosting this widget | off |
+| Labels in the system accent color | off |
+| Label font weight: normal … black | semi-bold |
+| Label font size | theme default |
+| Readability: off / contrast outline / backdrop behind label / outline and backdrop | contrast outline |
+| Outline width / soft edge | 1.4 px / 1.9 px |
+| Outline opacity | 82 % |
+| Outline color: automatic (opposite of the label) / dark / light / custom | automatic |
+| Backdrop opacity | 90 % |
+| Show window previews when hovering over tasks | off |
+| Hide other windows when hovering over previews | on |
+| Show an indicator when a task is playing audio | on |
+| Mute task when clicking the indicator | on |
+| Audio indicator style: accent color / theme / icon only / outline ring | accent color |
+| Audio indicator size: small / normal / large | normal |
+| Audio indicator position: top right / top left / bottom right / bottom left | top right |
+| Icon size | automatic |
+| Spacing between icons: small / normal / large | normal |
+| Fill free space on panel, icon alignment start / center / end | off, center |
+| Reserve space for expanded labels | on |
+| Hide the background of this panel | off |
+
+### Behavior
+
+| Option | Default |
+|---|---|
+| Group: do not group / by program name | by program name |
+| Clicking grouped task: cycles / side by side / textual list | cycles through tasks |
+| Sort: manually / alphabetically / by desktop / by activity / by horizontal window position | manually |
+| Clicking active task minimizes it | on |
+| Middle-clicking: nothing / close / new window / minimize-restore / toggle grouping / to current desktop | opens a new window |
+| Scrolling: nothing / cycles through all tasks / cycles through windows of the hovered task | does nothing |
+| Skip minimized tasks when scrolling | on |
+| Show only tasks from the current desktop / activity / screen, or minimized only | on / on / on / off |
+| Unhide an auto-hiding panel when a window wants attention | on |
+| New tasks appear to the right / left | right |
+
+### Readability
+
+Without a panel background, icons and labels sit directly on the wallpaper or windows, and a label
+whose colour is close to the colour behind it disappears. The widget cannot read the pixels behind
+it, so it does not guess. Instead it uses the two techniques that docks and desktop icons use:
+
+- **Contrast outline** (default): icon, label and indicator are drawn in one layer through a small
+  fragment shader (`package/contents/shaders/outline.frag`). It dilates their silhouette by 1–2 px
+  in 16 directions and adds a feathered edge, in the opposite brightness of the label colour (dark
+  for light text, light for dark text). This is how desktop icon labels and subtitles stay readable
+  on any background. A blurred drop shadow is not enough, because blurring thins it out on light
+  backgrounds. Width, soft edge, opacity and colour are adjustable, with a live preview on light,
+  dark and colourful backgrounds in the settings. A wide or very opaque outline fills the inside of
+  outline-style icons; a heavier label font weight keeps thin text strokes from drowning in it.
+- **Backdrop**: a pill in the theme background colour, lifted by a soft drop shadow like a tooltip,
+  fades in behind the expanded label. The label always keeps the contrast of your colour scheme.
+  Its opacity follows the expansion, so resting icons stay frameless.
+
+After editing the shader, rebuild it with `qsb --qt6 -o outline.frag.qsb outline.frag`
+(package `qt6-qtshadertools`).
 
 ## How the expansion works
 
@@ -99,8 +166,9 @@ gap 0.45 rem, radii 56/110/28 px.
 
 ## Limitations
 
-- The labels expand only in horizontal panels. Vertical panels show icons without expansion.
-- No drag-and-drop reordering, window thumbnails or minimize-to-icon animation yet.
+- The labels expand only in horizontal panels. Vertical panels show icons with the hover highlight only.
+- No multi-row layout and no minimize-to-icon animation.
+- Media controls are not part of the previews; use the Media Player widget for those.
 
 ## License
 
