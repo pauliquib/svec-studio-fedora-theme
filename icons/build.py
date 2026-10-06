@@ -2336,12 +2336,9 @@ def build_themes(out_dir: Path) -> None:
                     (ctx_dir / f"{fname}.svg").write_text(render_icon(attrs, inner, theme), encoding="utf-8")
                 count += 1
         for fdo_name, src in CONTROL_SYMBOLIC.items():
-            breeze = breeze_symbolic_file(fdo_name)
-            if breeze is not None:
-                # GTK bere u -symbolic jen výplň; Breeze má vyplněné tvary → vykreslí se správně
-                (theme_dir / "scalable" / "actions" / f"{fdo_name}.svg").write_text(
-                    breeze.read_text(encoding="utf-8"), encoding="utf-8")
-                count += 1
+            if breeze_symbolic_file(fdo_name) is not None:
+                # Neposíláme Breeze obsah (licence MIT). Soubor se nevytváří, téma má
+                # Inherits=breeze, takže systém použije Breeze verzi (vyplněné tvary, GTK OK).
                 continue
             if src not in icons:
                 continue
