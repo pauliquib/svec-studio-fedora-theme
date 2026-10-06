@@ -13,6 +13,7 @@ KCM.SimpleKCM {
     property alias cfg_minimizeActive: minimizeActive.checked
     property alias cfg_showHoverPill: showHoverPill.checked
     property alias cfg_reserveSpace: reserveSpace.checked
+    property alias cfg_hidePanelBackground: hidePanelBackground.checked
 
     Kirigami.FormLayout {
         QQC2.ComboBox {
@@ -70,6 +71,11 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: reserveSpace
             text: i18n("Rezervovat místo pro rozbalení (popisek nepřeteče přes okraj)")
+        }
+
+        QQC2.CheckBox {
+            id: hidePanelBackground
+            text: i18n("Skrýt pozadí panelu, ve kterém je tento widget")
         }
     }
 }

@@ -25,6 +25,17 @@ PlasmoidItem {
     Plasmoid.backgroundHints: PlasmaCore.Types.NoBackground
     preferredRepresentation: fullRepresentation
 
+    // Hide the background of the panel hosting this applet: the shell's
+    // Panel.qml skips its frame (and panelview its blur/shadow) when the
+    // containment reports NoBackground. Other panels are not affected.
+    Binding {
+        target: Plasmoid.containment
+        property: "backgroundHints"
+        value: PlasmaCore.Types.NoBackground
+        when: root.cfg.hidePanelBackground && Plasmoid.containment !== null
+        restoreMode: Binding.RestoreBindingOrValue
+    }
+
     // ---- geometry (web: slot 2.35rem, logo 1.85rem, gap 0.45rem) ------------
 
     readonly property int thickness: vertical ? width : height

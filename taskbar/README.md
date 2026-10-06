@@ -46,10 +46,12 @@ To update, run `git pull && ./install.sh`. To uninstall, run `kpackagetool6 -t P
 
 ### Fully transparent panel
 
-The applet itself has no background, but the panel behind it does. Plasma 6 offers only
-opaque, adaptive or translucent panels. For a completely invisible panel, use
-[Panel Colorizer](https://github.com/luisbocanegra/plasma-panel-colorizer) or a Plasma theme with a
-transparent `widgets/panel-background`.
+Enable **Hide the background of the panel hosting this widget** in the settings. Only the panel
+that contains the widget loses its background, blur and shadow. Other panels are not affected,
+and turning the option off brings the background back.
+
+It works by setting the panel containment's `backgroundHints` to `NoBackground`. The Plasma shell
+(`Panel.qml`) then skips drawing the panel frame, so no extra widget or theme is needed.
 
 ## Configuration
 
@@ -63,6 +65,7 @@ transparent `widgets/panel-background`.
 | Clicking the active window minimizes it | on |
 | Subtle tint behind the expanded icon | on |
 | Reserve space for the expansion (labels never overflow the applet edge) | on |
+| Hide the background of the panel hosting this widget | off |
 
 ## How the expansion works
 
