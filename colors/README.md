@@ -1,4 +1,6 @@
-# Svec Studio Colours
+# Panel & Window Colours
+
+![Nastavení Panel & Window Colours](docs/screenshots/panel-window-colours.png)
 
 Nativní modul (KCM) do Nastavení systému KDE Plasma 6. Barvy panelu, oken a akcentu se v něm
 nastavují na jednom místě a změny jsou vidět v živém náhledu dřív, než je použiješ.
