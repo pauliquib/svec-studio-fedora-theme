@@ -10,8 +10,7 @@ installed on its own.
 | [`search-bar/`](search-bar) | **Plasma Search Bar**: a VS Code–style command palette in the KDE panel, with live KRunner results and prefix modes | `cd search-bar && ./install.sh` |
 | [`taskbar/`](taskbar) | **Expanding Icons Task Manager**: an icon-only task manager whose icons expand into a label on hover | `cd taskbar && ./install.sh` |
 
-The history of each part was imported from the former separate repositories
-`svec-studio-taskbar`, `svec-studio-iconpack` and `plasma-search-bar`.
+Each part was developed in this repository. Its history was imported from the earlier separate projects.
 
 ## License
 
