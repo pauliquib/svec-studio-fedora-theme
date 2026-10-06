@@ -14,6 +14,9 @@ Zdroje:
                 src/svec-studio.svg = neutrální "S" mark → i cz.svec.Studio,
                 start-here, kickoff… (přebarvuje se s variantou)
   FDO_MAP     → standardní freedesktop jména (apps/places/actions/…)
+  Breeze      → pro jména, která Breeze má a pack ne, se vygenerují
+                dogenerované ikony ze svec glyphů (klíčová slova → glyph,
+                jinak neutrální glyph per kontext) → plná nahraditelnost Breeze
 
 Použití:
   python3 build.py              # → themes/SvecStudio-*/
@@ -1839,6 +1842,243 @@ FDO_MAP["applets"] = {
     "org.kde.muonnotifier": "svec-sc-package",
 }
 
+# --- Breeze completion ---------------------------------------------------------------
+# Jména, která má Breeze a my ne → dogenerujeme s glyph podle klíčových slov
+# (nebo neutrální per kontext). Cíl: plná nahraditelnost Breeze bez barevných fallbacků.
+BREEZE_DIR = Path("/usr/share/icons/breeze")
+BREEZE_CTX = {
+    "actions": "actions", "apps": "apps", "applets": "applets",
+    "categories": "categories", "devices": "devices", "emblems": "emblems",
+    "emotes": "emotes", "mimetypes": "mimetypes", "places": "places",
+    "preferences": "preferences", "status": "status",
+}
+
+# obecná pravidla — pořadí rozhoduje; glyph musí existovat v icons
+RULES: list[tuple[str, str]] = [
+    (r"network-wireless|wifi|wireless", "svec-sc-wifi"),
+    (r"network-(wired|workgroup)|ethernet", "svec-sc-cable"),
+    (r"network-vpn|vpn", "svec-sc-shield-check"),
+    (r"network-(mobile|cell|modem)|cellular", "svec-sc-antenna"),
+    (r"network|nm-", "svec-sc-wifi"),
+    (r"bluetooth", "svec-sc-bluetooth"),
+    (r"battery|ups|ac-adapter|power-supply|charging", "svec-battery"),
+    (r"brightness|backlight", "svec-sun"),
+    (r"microphone|audio-input|mic-", "svec-sc-microphone"),
+    (r"audio-volume|speaker|volume", "svec-sc-volume"),
+    (r"audio-|music|song|melody|track", "svec-sc-music"),
+    (r"media-playback-start|player-play|play$", "svec-sc-player-play"),
+    (r"pause", "svec-sc-player-pause"),
+    (r"media-playback-stop|stop", "svec-sc-player-stop"),
+    (r"skip-forward|seek-forward|next|forward", "svec-sc-player-skip-forward"),
+    (r"skip-back|seek-back|previous|back|rewind", "svec-sc-player-skip-back"),
+    (r"record", "svec-sc-player-record"),
+    (r"eject", "svec-eject"),
+    (r"media-optical|cdrom|dvd|bluray|disc", "svec-sc-disc"),
+    (r"mail|envelope|message-(new|send)|send", "svec-sc-mail"),
+    (r"chat|conversation|irc|im-|instant", "svec-sc-message"),
+    (r"rss|feed", "svec-sc-rss"),
+    (r"weather-(clear|few)|sun", "svec-sc-sun"),
+    (r"weather|rain|snow|storm|fog|wind|cloud|hail|freez", "svec-sc-cloud"),
+    (r"undo", "svec-arrow-left"),
+    (r"redo", "svec-arrow-right"),
+    (r"cut", "svec-sc-scissors"),
+    (r"copy", "svec-sc-copy"),
+    (r"paste|clipboard", "svec-sc-clipboard-list"),
+    (r"delete|trash|remove|wastebin|rubbish|shred|purge|empty", "svec-sc-trash"),
+    (r"select", "svec-kit-check"),
+    (r"find|search|look", "svec-sc-search"),
+    (r"zoom-in|zoom-out|zoom", "svec-zoom-in"),
+    (r"folder-(open|new)", "svec-sc-folder-open"),
+    (r"folder|directory|dir-|inode", "svec-sc-folder"),
+    (r"document-new|file-new|page-new|new-", "svec-sc-file" ),
+    (r"document-(save|export|print|open)|file-(save|export|print|open|download|upload)", "svec-sc-file-text"),
+    (r"document|file|page|office|text-x|docbook|rtf|pdf|spreadsheet|csv|sheet|table", "svec-sc-file-text"),
+    (r"image|photo|picture|snapshot|screenshot|bitmap|jpeg|png|svg|tiff|xcf|pixel|graphics", "svec-sc-photo"),
+    (r"video|movie|film|mkv|mp4|avi|webm", "svec-sc-video"),
+    (r"archive|zip|tar|gz|compress|package-x|7z|rar", "svec-sc-archive"),
+    (r"font|typeface", "svec-sc-file-text"),
+    (r"html|xml|xhtml|css|javascript|source|script|code|develop", "svec-code"),
+    (r"terminal|console|shell|prompt|command", "svec-terminal"),
+    (r"edit", "svec-sc-pencil"),
+    (r"format-text-(bold|weight)|bold", "svec-bold"),
+    (r"italic", "svec-italic"),
+    (r"underline", "svec-underline"),
+    (r"format-text|justify|align|indent|list-(add|remove)|format-", "svec-sc-file-text"),
+    (r"view-(fullscreen|zoom)|fullscreen|maximi|expand", "svec-sc-maximize"),
+    (r"view-(restore|normal)|minimi|restore", "svec-sc-minimize"),
+    (r"hidden|invisible|eye-off|hide", "svec-sc-eye-off"),
+    (r"view|show|visible|preview|presentation|projector|display-", "svec-sc-eye"),
+    (r"go-(home|up)", "svec-arrow-up"),
+    (r"go-|jump|navigate|location|position", "svec-arrow-right"),
+    (r"arrow|left$|right$|previous$", "svec-arrow-right"),
+    (r"help|about|info|information|hint|tip|question|faq", "svec-sc-help"),
+    (r"error|critical|important|invalid|fail|bug", "svec-sc-alert-circle"),
+    (r"warning|caution|attention|alert", "svec-sc-alert-triangle"),
+    (r"ok$|yes$|accept|apply|confirm|approve|done|success|finish|complete", "svec-kit-check"),
+    (r"cancel|no$|denied|forbidden|reject|block|close$|exit|quit|abort", "svec-sc-x"),
+    (r"refresh|reload|sync|update|reload|renew", "svec-sc-refresh"),
+    (r"rotate|orientation", "svec-sc-rotate-clockwise"),
+    (r"lock|encrypt|secure|protect|password|private", "svec-sc-lock"),
+    (r"unlock|decrypt", "svec-sc-lock-open"),
+    (r"key", "svec-sc-key"),
+    (r"shield|security|policy|permission", "svec-sc-shield"),
+    (r"certificate|sign|signature|verify", "svec-sc-certificate"),
+    (r"bell|notif", "svec-sc-bell"),
+    (r"clock|time|timer|chronomet|alarm|cron|schedule", "svec-sc-clock"),
+    (r"calendar|date|appointment|event|agenda", "svec-sc-calendar-event"),
+    (r"printer|print", "svec-sc-printer"),
+    (r"camera|webcam", "svec-sc-camera"),
+    (r"scanner|scan", "svec-sc-scan"),
+    (r"display|monitor|screen|randr|video-display|tv", "svec-sc-device-desktop"),
+    (r"laptop|notebook", "svec-sc-device-laptop"),
+    (r"computer|desktop|cpu|processor|chip", "svec-sc-cpu"),
+    (r"drive|disk|harddisk|hdd|ssd|storage|mount|partition", "svec-sc-database"),
+    (r"usb|removable|sd-card|flash|mmc|media-flash|thumb", "svec-sc-usb"),
+    (r"server|host|database|db-|sql", "svec-sc-server"),
+    (r"phone|mobile|smartphone|telefon|call", "svec-sc-device-mobile"),
+    (r"tablet", "svec-sc-device-tablet"),
+    (r"headphone|headset|audio-head|earbud", "svec-sc-headphones"),
+    (r"keyboard|input-keyboard|keypad", "svec-sc-keyboard"),
+    (r"mouse|input-mouse|pointing|cursor", "svec-sc-pointer"),
+    (r"touchpad|trackpad", "svec-sc-device-tablet"),
+    (r"gamepad|joystick|game|gaming|controller|steam", "svec-sc-device-gamepad-2"),
+    (r"star|favorite|bookmark|rating|featured", "svec-sc-star"),
+    (r"heart|love|like", "svec-sc-heart"),
+    (r"flag", "svec-sc-flag"),
+    (r"tag|label", "svec-sc-tag"),
+    (r"link|symlink|chain", "svec-sc-link"),
+    (r"share|social", "svec-sc-share"),
+    (r"download|save-as|install|get-|fetch", "svec-sc-download"),
+    (r"upload|publish|push", "svec-sc-upload"),
+    (r"cloud|online|remote|sync", "svec-sc-cloud"),
+    (r"globe|world|web|internet|browser|online|www|url", "svec-sc-world"),
+    (r"map|marker|pin$|gps|route|place", "svec-sc-map-pin"),
+    (r"compass|direction", "svec-sc-compass"),
+    (r"home|house", "svec-sc-home"),
+    (r"user-|user$|account|contact|person|profile|login|log-?in|identity", "svec-sc-user"),
+    (r"users|group|people|team|community", "svec-sc-users"),
+    (r"chart|graph|diagram|plot|statistic|report|analysis", "svec-sc-chart-line"),
+    (r"list|menu|index|catalog|content|toc", "svec-sc-list-details"),
+    (r"grid|layout|tile|arrange|distribute", "svec-sc-layout-grid"),
+    (r"tree|hierarch|branch|node|diagram|flowchart", "svec-sc-git-branch"),
+    (r"bug|debug|insect", "svec-sc-bug"),
+    (r"plug|socket|power|energy|electric", "svec-sc-plug"),
+    (r"moon|night|dark|sleep|suspend|hibernate", "svec-sc-moon"),
+    (r"droplet|water|humid|drop", "svec-sc-droplet"),
+    (r"thermometer|temperature|temp", "svec-sc-temperature"),
+    (r"car|vehicle|truck|transport|drive$|automobile", "svec-sc-car"),
+    (r"bike|bicycle", "svec-sc-bike"),
+    (r"walk|run|sport|fitness|activity", "svec-sc-run"),
+    (r"building|office|company|enterprise", "svec-sc-building"),
+    (r"book|read|library|manual|documentation|learn|education|study", "svec-learn"),
+    (r"paint|color|palette|theme|style|art", "svec-sc-palette"),
+    (r"scissors", "svec-sc-scissors"),
+    (r"eraser|rubber", "svec-sc-eraser"),
+    (r"ruler|measure", "svec-sc-tool"),
+    (r"wrench|hammer|tool|repair|maintenance|fix", "svec-sc-tool"),
+    (r"paperclip|attach", "svec-sc-paperclip"),
+    (r"note|sticky|memo|comment|annotation", "svec-sc-note"),
+    (r"inbox|tray", "svec-sc-inbox"),
+    (r"package|box|crate|product", "svec-sc-package"),
+    (r"gift|present|reward|bonus", "svec-sc-gift"),
+    (r"trophy|award|medal|prize|achieve", "svec-sc-trophy"),
+    (r"thumb-up|thumbs-up|positive", "svec-sc-thumb-up"),
+    (r"thumb-down|thumbs-down|negative", "svec-sc-thumb-down"),
+    (r"eye|look|watch|monitor$|observe", "svec-sc-eye"),
+    (r"filter|sort|order", "svec-sc-filter"),
+    (r"window|kwin", "svec-sc-device-desktop"),
+    (r"dialog|window-|popup", "svec-sc-device-desktop"),
+    (r"emblem|badge|overlay|mark", "svec-sc-circle"),
+    (r"face|smile|emote|emotion|mood", "svec-sc-mood-smile"),
+    (r"checkmark|tick", "svec-kit-check"),
+    (r"plus|add$|insert|new$", "svec-sc-plus"),
+    (r"minus|subtract|remove$", "svec-sc-minus"),
+    (r"equal|math|calc|compute", "svec-sc-calculator"),
+    (r"hash|number", "svec-sc-hash"),
+    (r"at$|email|address", "svec-sc-mail"),
+    (r"applications-(internet|web|network)", "svec-sc-world"),
+    (r"applications-(development|engineering|science)", "svec-code"),
+    (r"applications-graphics", "svec-sc-palette"),
+    (r"applications-office", "svec-sc-file-text"),
+    (r"applications-(games|toys)", "svec-sc-device-gamepad-2"),
+    (r"applications-(education|school)", "svec-learn"),
+    (r"applications-multimedia|multimedia", "svec-video"),
+    (r"applications-(utilities|accessories|system|other)", "svec-settings"),
+    (r"applications-electronics", "svec-sc-cpu"),
+    (r"applications-", "svec-extapp"),
+    (r"preferences|settings|configure|config|option|control-panel|kcontrol|systemsettings|kcm", "svec-settings"),
+    (r"kde|plasma|start-here|launcher|kickoff|kicker", "cz.svec.Studio"),
+    (r"scanner|scanline", "svec-sc-scan"),
+    (r"rss|atom|news", "svec-sc-rss"),
+    (r"radio|broadcast|transmit", "svec-sc-radio"),
+    (r"cast|chromecast|airplay", "svec-sc-cast"),
+    (r"satellite|antenna|signal", "svec-sc-antenna"),
+]
+
+# neutrální fallback per kontext (když žádné pravidlo nesedělo)
+CTX_FALLBACK = {
+    "apps": "svec-extapp",
+    "actions": "svec-sc-circle",
+    "places": "svec-sc-folder",
+    "mimetypes": "svec-sc-file",
+    "devices": "svec-sc-device-desktop",
+    "status": "svec-sc-info-circle",
+    "emblems": "svec-sc-circle",
+    "emotes": "svec-sc-mood-smile",
+    "categories": "svec-sc-layout-grid",
+    "preferences": "svec-settings",
+    "applets": "svec-sc-layout-grid",
+    "intl": "svec-sc-world",
+}
+
+
+def breeze_names() -> dict[str, set[str]]:
+    """kontext → {jména ikon} z nainstalovaného breeze (unikátní názvy souborů)."""
+    out: dict[str, set[str]] = {}
+    if not BREEZE_DIR.is_dir():
+        return out
+    for ctx_dir in BREEZE_DIR.iterdir():
+        if not ctx_dir.is_dir() or ctx_dir.name not in BREEZE_CTX:
+            continue
+        for f in ctx_dir.iterdir():
+            if f.is_dir():
+                for svg in f.glob("*.svg"):
+                    out.setdefault(BREEZE_CTX[ctx_dir.name], set()).add(svg.stem)
+            elif f.suffix == ".svg":
+                out.setdefault(BREEZE_CTX[ctx_dir.name], set()).add(f.stem)
+    return out
+
+
+def breeze_completions(icons: dict[str, tuple[str, str]]) -> dict[str, dict[str, str]]:
+    """Chybějící breeze jména → glyph z icons (klíčová slova → CTX_FALLBACK)."""
+    covered = set(icons) | {n for m in FDO_MAP.values() for n in m} | {
+        n for s in SYNTH_ICONS.values() for n in s
+    }
+    compiled = [(re.compile(pat), glyph) for pat, glyph in RULES]
+    out: dict[str, dict[str, str]] = {}
+    for ctx, names in breeze_names().items():
+        for name in names:
+            if name in covered:
+                continue
+            # -symbolic/-symbolic-ltr/-symbolic-rtl → zkus základní jméno
+            base = re.sub(r"-symbolic(-ltr|-rtl)?$", "", name)
+            glyph = None
+            for pat, g in compiled:
+                if pat.search(base):
+                    glyph = g
+                    break
+            if glyph is None and base != name:
+                for pat, g in compiled:
+                    if pat.search(name):
+                        glyph = g
+                        break
+            if glyph is None:
+                glyph = CTX_FALLBACK.get(ctx, "svec-extapp")
+            if glyph not in icons and glyph != "cz.svec.Studio":
+                glyph = CTX_FALLBACK.get(ctx, "svec-extapp")
+            if glyph in icons or glyph == "cz.svec.Studio":
+                out.setdefault(ctx, {})[name] = glyph
+    return out
 _ENTRY_RE = re.compile(r'(?:^|,)\s*(?:(\w+)|"([^"]+)")\s*:\s*\'((?:[^\'\\]|\\.)*)\'', re.S)
 _SVG_RE = re.compile(r"<svg\b([^>]*)>([\s\S]*?)</svg>")
 _STRIP_ATTRS_RE = re.compile(r'\s(?:aria-hidden|width|height|id|version|class)="[^"]*"')
@@ -1987,11 +2227,13 @@ _CONTEXT_NAMES = {
     "intl": "International",
     "preferences": "Preferences",
     "applets": "Applications",
+    "categories": "Categories",
+    "emotes": "Emotes",
 }
 
 
 def index_theme(theme: str, meta: dict[str, str]) -> str:
-    dirs = list(dict.fromkeys(["apps", *FDO_MAP]))
+    dirs = list(dict.fromkeys(["apps", *FDO_MAP, *BREEZE_CTX.values()]))
     sections = [
         "[Icon Theme]",
         f"Name=Svec Studio Icons ({meta['label']})",
@@ -2029,6 +2271,7 @@ def collect_icons() -> dict[str, tuple[str, str]]:
 
 def build_themes(out_dir: Path) -> None:
     icons = collect_icons()
+    completions = breeze_completions(icons)
     missing = {src for m in FDO_MAP.values() for src in m.values() if src not in icons}
     if missing:
         print("VAROVÁNÍ: mapování ukazuje na neexistující ikony:", sorted(missing))
@@ -2060,6 +2303,14 @@ def build_themes(out_dir: Path) -> None:
             ctx_dir.mkdir(parents=True, exist_ok=True)
             for name, (attrs, inner) in synth.items():
                 (ctx_dir / f"{name}.svg").write_text(render_icon(attrs, inner, theme), encoding="utf-8")
+                count += 1
+        # breeze completion — chybějící breeze jména → nejbližší svec glyph
+        for ctx, mapping in completions.items():
+            ctx_dir = theme_dir / "scalable" / ctx
+            ctx_dir.mkdir(parents=True, exist_ok=True)
+            for fdo_name, src in mapping.items():
+                attrs, inner = icons[src]
+                (ctx_dir / f"{fdo_name}.svg").write_text(render_icon(attrs, inner, theme), encoding="utf-8")
                 count += 1
         print(f"{theme}: {count} ikon → {theme_dir}")
 

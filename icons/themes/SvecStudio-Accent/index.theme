@@ -4,7 +4,7 @@ Comment=Outline icons from Svec Studio — recolored by Plasma accent color — 
 Inherits=breeze
 DisplayDepth=32
 FollowsColorScheme=true
-Directories=scalable/apps,scalable/places,scalable/actions,scalable/mimetypes,scalable/devices,scalable/status,scalable/emblems,scalable/intl,scalable/preferences,scalable/applets
+Directories=scalable/apps,scalable/places,scalable/actions,scalable/mimetypes,scalable/devices,scalable/status,scalable/emblems,scalable/intl,scalable/preferences,scalable/applets,scalable/categories,scalable/emotes
 
 [scalable/apps]
 Context=Applications
@@ -71,6 +71,20 @@ Type=Scalable
 
 [scalable/applets]
 Context=Applications
+Size=48
+MinSize=16
+MaxSize=256
+Type=Scalable
+
+[scalable/categories]
+Context=Categories
+Size=48
+MinSize=16
+MaxSize=256
+Type=Scalable
+
+[scalable/emotes]
+Context=Emotes
 Size=48
 MinSize=16
 MaxSize=256

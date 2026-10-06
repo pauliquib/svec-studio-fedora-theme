@@ -2,7 +2,7 @@
 
 Icon pack pro Fedoru / KDE Plasma ve stylu [Svec Studio](https://github.com/pauliquib/svec-studio) — outline SVG ikony (`viewBox="0 0 24 24"`, `stroke="currentColor"`, `stroke-width="1.75"`).
 
-Pack pokrývá standardní freedesktop jména (`folder`, `document-save`, `applications-*`, `battery-*`, `network-*`…), takže po aktivaci přebarvuje systémové ikony — Dolphin, Kickoff, Plasma panel, MIME ikony i nainstalované aplikace. Nemapané ikony padají na `Inherits=breeze`.
+Pack pokrývá **všechna jména, která obsahuje Breeze** (7 100+) — buď přímým mapováním na Svec Studio glyphy, nebo dogenerovanými ikonami (`build.py` při buildu načte nainstalovaný Breeze a pro každé chybějící jméno vybere glyph podle klíčových slov / neutrální per kontext). Po aktivaci tedy přebarvuje celý systém včetně System Tray, Plasma appletů a KCM stránek — žádný barevný Breeze fallback.
 
 ## Varianty
 
@@ -12,11 +12,11 @@ Pack pokrývá standardní freedesktop jména (`folder`, `document-save`, `appli
 | `SvecStudio-White` | v1.1 | pevně bílé `#ffffff` |
 | `SvecStudio-Black` | v1.2 | pevně černé `#000000` |
 
-Každá varianta obsahuje ~2 350 ikon napříč kontexty `apps`, `places`, `actions`, `mimetypes`, `devices`, `status`, `emblems`, `preferences`, `applets`, `intl`.
+Každá varianta obsahuje ~8 600 ikon napříč kontexty `apps`, `places`, `actions`, `mimetypes`, `devices`, `status`, `emblems`, `emotes`, `categories`, `preferences`, `applets`, `intl`.
 
 Accent varianta používá stejný mechanismus jako Breeze (`<style id="current-color-scheme">` + `class="ColorScheme-Accent"` + `FollowsColorScheme=true`), mimo KDE se renderuje fallback `#3daee9`.
 
-## Screenshots — všech 531 ikon
+## Screenshots — všech 542 zdrojových ikon
 
 | Accent | White | Black |
 |--------|-------|-------|
@@ -51,6 +51,7 @@ Poznámky:
 
 - Aplikace s `Icon=/absolutní/cesta.png` v `.desktop` souboru téma obchází — přepiš na jméno ikony (user překryv v `~/.local/share/applications/`).
 - Syntetické ikony (baterie, UPS, `osd-*`…) generuje `build.py` přímo.
+- Breeze completion: `build.py` při buildu čte `/usr/share/icons/breeze` — jména, která Breeze má a pack ne, doplní nejbližším svec glyphem (pravidla `RULES` + `CTX_FALLBACK` v `build.py`). Bez nainstalovaného Breeze se krok přeskočí.
 - `svec-studio` / `cz.svec.Studio` / `start-here*` je neutrální outline „S" mark (`src/svec-studio.svg`) — přebarvuje se s variantou jako ostatní ikony.
 
 ## Struktura
