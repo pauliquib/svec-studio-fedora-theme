@@ -35,6 +35,9 @@
     <entry name="showHoverPill" type="Bool">
       <default>true</default>
     </entry>
+    <entry name="accentLabels" type="Bool">
+      <default>false</default>
+    </entry>
     <entry name="reserveSpace" type="Bool">
       <default>true</default>
     </entry>

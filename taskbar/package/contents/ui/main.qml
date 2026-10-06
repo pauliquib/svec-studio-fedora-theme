@@ -64,7 +64,7 @@ PlasmoidItem {
         filterByVirtualDesktop: root.cfg.onlyCurrentDesktop
         filterByScreen: root.cfg.onlyCurrentScreen
         filterByActivity: true
-        filterHidden: true
+        // No filterHidden: minimized windows count as hidden and would vanish
 
         launchInPlace: true
         separateLaunchers: false
@@ -399,6 +399,7 @@ PlasmoidItem {
                         maximumLineCount: 1
                         elide: Text.ElideRight
                         font.weight: Font.DemiBold
+                        color: root.cfg.accentLabels ? Kirigami.Theme.highlightColor : Kirigami.Theme.textColor
                         opacity: chip.labelOpacity
                     }
                 }

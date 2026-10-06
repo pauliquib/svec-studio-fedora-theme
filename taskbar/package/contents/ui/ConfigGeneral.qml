@@ -12,6 +12,7 @@ KCM.SimpleKCM {
     property alias cfg_onlyCurrentScreen: onlyCurrentScreen.checked
     property alias cfg_minimizeActive: minimizeActive.checked
     property alias cfg_showHoverPill: showHoverPill.checked
+    property alias cfg_accentLabels: accentLabels.checked
     property alias cfg_reserveSpace: reserveSpace.checked
     property alias cfg_hidePanelBackground: hidePanelBackground.checked
 
@@ -65,7 +66,12 @@ KCM.SimpleKCM {
         QQC2.CheckBox {
             id: showHoverPill
             Kirigami.FormData.label: i18n("Vzhled:")
-            text: i18n("Jemné podbarvení rozbalené ikony")
+            text: i18n("Zvýrazňující pozadí při najetí myší")
+        }
+
+        QQC2.CheckBox {
+            id: accentLabels
+            text: i18n("Popisky v barvě akcentu systému")
         }
 
         QQC2.CheckBox {

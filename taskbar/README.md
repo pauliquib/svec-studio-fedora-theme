@@ -63,7 +63,8 @@ It works by setting the panel containment's `backgroundHints` to `NoBackground`.
 | Group windows of the same application | on |
 | Only windows from the current desktop / this panel's screen | on / on |
 | Clicking the active window minimizes it | on |
-| Subtle tint behind the expanded icon | on |
+| Highlight background on hover | on |
+| Labels in the system accent colour | off |
 | Reserve space for the expansion (labels never overflow the applet edge) | on |
 | Hide the background of the panel hosting this widget | off |
 
