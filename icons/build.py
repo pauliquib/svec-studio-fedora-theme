@@ -2079,6 +2079,14 @@ def breeze_names() -> dict[str, set[str]]:
     return out
 
 
+def breeze_symbolic_file(name: str) -> Path | None:
+    """Breeze -symbolic soubor pro akci (vyplněné tvary, GTK je vykreslí správně)."""
+    if not name.endswith("-symbolic") or not BREEZE_DIR.is_dir():
+        return None
+    matches = sorted((BREEZE_DIR / "actions").rglob(f"{name}.svg"))
+    return matches[0] if matches else None
+
+
 def breeze_completions(icons: dict[str, tuple[str, str]]) -> dict[str, dict[str, str]]:
     """Chybějící breeze jména → glyph z icons (klíčová slova → CTX_FALLBACK)."""
     covered = set(icons) | {n for m in FDO_MAP.values() for n in m} | {
@@ -2328,6 +2336,13 @@ def build_themes(out_dir: Path) -> None:
                     (ctx_dir / f"{fname}.svg").write_text(render_icon(attrs, inner, theme), encoding="utf-8")
                 count += 1
         for fdo_name, src in CONTROL_SYMBOLIC.items():
+            breeze = breeze_symbolic_file(fdo_name)
+            if breeze is not None:
+                # GTK bere u -symbolic jen výplň; Breeze má vyplněné tvary → vykreslí se správně
+                (theme_dir / "scalable" / "actions" / f"{fdo_name}.svg").write_text(
+                    breeze.read_text(encoding="utf-8"), encoding="utf-8")
+                count += 1
+                continue
             if src not in icons:
                 continue
             attrs, inner = icons[src]

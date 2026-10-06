@@ -1,16 +1,13 @@
-<svg 
-  xmlns="http://www.w3.org/2000/svg"
- 
- 
-  viewBox="0 0 24 24"
-  fill="none"
-  stroke="#000000"
-  stroke-width="1.75"
-  stroke-linecap="round"
-  stroke-linejoin="round"
- 
->
-<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-  <path d="M9 11l3 3l8 -8" />
-  <path d="M20 12v6a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h9" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <defs id="defs3051">
+    <style type="text/css" id="current-color-scheme">
+      .ColorScheme-Text {
+        color:#232629;
+      }
+      </style>
+  </defs>
+ <path style="fill:currentColor;fill-opacity:1;stroke:none" 
+     d="M 13.273438 3.5 L 5.6367188 11.060547 L 2.7265625 8.1796875 L 2 8.9003906 L 4.9082031 11.779297 L 5.6367188 12.5 L 6.7265625 11.419922 L 14 4.2207031 L 13.273438 3.5 z "
+     class="ColorScheme-Text"
+     />
 </svg>

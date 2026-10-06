@@ -1,11 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <style id="current-color-scheme" type="text/css">.ColorScheme-Accent{color:#3daee9;}.ColorScheme-Text{color:#3daee9;}</style>
-  <g class="ColorScheme-Accent" fill="none"
-  stroke="currentColor"
-  stroke-width="1.75"
-  stroke-linecap="round"
-  stroke-linejoin="round">
-<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-  <path d="M18 7v14l-6 -4l-6 4v-14a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4z" />
-  </g>
+<svg version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <style type="text/css" id="current-color-scheme">.ColorScheme-Text {
+        color:#232629;
+      }</style>
+    </defs>
+    <path style="fill:currentColor;fill-opacity:1;stroke:none"
+          d="m11 9v2.000013h-1.999998v0.999987h1.999998v2.000013h1.000002v-2.000013h1.999998v-0.999987h-1.999998v-2.000013h-1.000002m-7-7v12l4-1.59375v-1l-3 1.1875v-9.59375h6v5h1v-6h-7z"
+          class="ColorScheme-Text"/>
 </svg>

@@ -1,16 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <style id="current-color-scheme" type="text/css">.ColorScheme-Accent{color:#3daee9;}.ColorScheme-Text{color:#3daee9;}</style>
-  <g class="ColorScheme-Accent" fill="none"
-  stroke="currentColor"
-  stroke-width="1.75"
-  stroke-linecap="round"
-  stroke-linejoin="round">
-<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-  <path d="M13 5h8" />
-  <path d="M13 9h5" />
-  <path d="M13 15h8" />
-  <path d="M13 19h5" />
-  <path d="M3 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-  <path d="M3 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <defs id="defs3051">
+    <style type="text/css" id="current-color-scheme">
+      .ColorScheme-Text {
+        color:#232629;
+      }
+      </style>
+  </defs>
+ <path style="fill:currentColor;fill-opacity:1;stroke:none" 
+       d="M 2 2 L 2 3 L 14 3 L 14 2 L 2 2 z M 7 4 L 7 5 L 14 5 L 14 4 L 7 4 z M 4 7 L 4 8 L 14 8 L 14 7 L 4 7 z M 9 9 L 9 10 L 14 10 L 14 9 L 9 9 z M 6 12 L 6 13 L 14 13 L 14 12 L 6 12 z M 2 13 L 2 14 L 4 14 L 4 13 L 2 13 z "
+     class="ColorScheme-Text"
+     />
 </svg>

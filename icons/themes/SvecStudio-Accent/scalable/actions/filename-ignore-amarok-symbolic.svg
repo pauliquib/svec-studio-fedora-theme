@@ -1,13 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-  <style id="current-color-scheme" type="text/css">.ColorScheme-Accent{color:#3daee9;}.ColorScheme-Text{color:#3daee9;}</style>
-  <g class="ColorScheme-Accent" fill="none"
-  stroke="currentColor"
-  stroke-width="1.75"
-  stroke-linecap="round"
-  stroke-linejoin="round">
-<path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-  <path d="M10.585 10.587a2 2 0 0 0 2.829 2.828" />
-  <path d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87" />
-  <path d="M3 3l18 18" />
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <defs id="defs3051">
+    <style type="text/css" id="current-color-scheme">
+      .ColorScheme-Text {
+        color:#232629;
+      }
+      </style>
+  </defs>
+ <path style="fill:currentColor;fill-opacity:1;stroke:none" 
+       d="M 8 2 C 4.6862928 2 2 4.6862997 2 8 C 2 11.3137 4.6862928 14 8 14 C 11.313707 14 14 11.3137 14 8 C 14 4.6862997 11.313707 2 8 2 z M 8 3 C 10.761424 3 13 5.2385763 13 8 C 13 9.199635 12.548037 10.263384 11.84375 11.125 L 4.875 4.15625 C 5.7366165 3.4519627 6.8003651 3 8 3 z M 4.15625 4.875 L 11.125 11.84375 C 10.263384 12.548037 9.199635 13 8 13 C 5.2385763 13 3 10.761424 3 8 C 3 6.8003651 3.4519627 5.7366165 4.15625 4.875 z "
+     class="ColorScheme-Text"
+     />
 </svg>
