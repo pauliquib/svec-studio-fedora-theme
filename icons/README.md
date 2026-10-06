@@ -45,13 +45,13 @@ Poznámky:
 
 - Aplikace s `Icon=/absolutní/cesta.png` v `.desktop` souboru téma obchází — přepiš na jméno ikony (user překryv v `~/.local/share/applications/`).
 - Syntetické ikony (baterie, UPS, `osd-*`…) generuje `build.py` přímo.
-- Logo Svec Studia (`cz.svec.Studio`, `svec-studio`, `start-here*`) zůstává barevné ve všech variantách.
+- `svec-studio` / `cz.svec.Studio` / `start-here*` je neutrální outline „S" mark (`src/svec-studio.svg`) — přebarvuje se s variantou jako ostatní ikony.
 
 ## Struktura
 
 ```
-src/       zdrojové SVG ikony (svec-*.svg, ručně kreslené glyphy: zed, claude, docker, ventoy, stm32cubeide…)
-logo.svg   logo Svec Studia
+src/       zdrojové SVG ikony (svec-*.svg; ručně kreslené: svec-zed, svec-claude, svec-docker,
+           svec-ventoy, svec-stm32cubeide, svec-studio = neutrální "S" mark…)
 build.py   generátor → themes/ (+ --install do ~/.local/share/icons)
 themes/    předvygenerované SvecStudio-{Accent,White,Black} icon themy
 ```

@@ -11,7 +11,8 @@ Vygeneruje tři varianty icon themu:
 
 Zdroje:
   src/*.svg   → zdrojové ikony (svec-<name>.svg) → scalable/apps/
-  logo.svg    → logo Svec Studia (cz.svec.Studio, svec-studio — barevné)
+                src/svec-studio.svg = neutrální "S" mark → i cz.svec.Studio,
+                start-here, kickoff… (přebarvuje se s variantou)
   FDO_MAP     → standardní freedesktop jména (apps/places/actions/…)
 
 Použití:
@@ -28,7 +29,6 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 SRC_DIR = ROOT / "src"
-LOGO_SVG = ROOT / "logo.svg"
 DEFAULT_OUT = ROOT / "themes"
 INSTALL_DIR = Path.home() / ".local" / "share" / "icons"
 
@@ -2023,13 +2023,13 @@ def collect_icons() -> dict[str, tuple[str, str]]:
     icons: dict[str, tuple[str, str]] = {}
     for f in sorted(SRC_DIR.glob("*.svg")):
         icons[f.stem] = split_svg(f.read_text(encoding="utf-8"))
+    icons["cz.svec.Studio"] = icons["svec-studio"]
     return icons
 
 
 def build_themes(out_dir: Path) -> None:
     icons = collect_icons()
-    logo = LOGO_SVG.read_text(encoding="utf-8")
-    missing = {src for m in FDO_MAP.values() for src in m.values() if src not in icons and src != "cz.svec.Studio"}
+    missing = {src for m in FDO_MAP.values() for src in m.values() if src not in icons}
     if missing:
         print("VAROVÁNÍ: mapování ukazuje na neexistující ikony:", sorted(missing))
     for theme, meta in VARIANTS.items():
@@ -2044,19 +2044,13 @@ def build_themes(out_dir: Path) -> None:
             f.parent.mkdir(parents=True, exist_ok=True)
             f.write_text(render_icon(attrs, inner, theme), encoding="utf-8")
             count += 1
-        # logo aplikace — branding zůstává barevný ve všech variantách
-        for alias in ("cz.svec.Studio", "svec-studio"):
-            (theme_dir / "scalable" / "apps" / f"{alias}.svg").write_text(logo, encoding="utf-8")
-            count += 1
         # standardní freedesktop jména → přebírají systémové ikony
         for ctx, mapping in FDO_MAP.items():
             ctx_dir = theme_dir / "scalable" / ctx
             ctx_dir.mkdir(parents=True, exist_ok=True)
             for fdo_name, src in mapping.items():
                 fname = fdo_name.replace("/", "-")  # x-scheme-handler/magnet → x-scheme-handler-magnet.svg
-                if src == "cz.svec.Studio":
-                    (ctx_dir / f"{fname}.svg").write_text(logo, encoding="utf-8")
-                elif src in icons:
+                if src in icons:
                     attrs, inner = icons[src]
                     (ctx_dir / f"{fname}.svg").write_text(render_icon(attrs, inner, theme), encoding="utf-8")
                 count += 1
