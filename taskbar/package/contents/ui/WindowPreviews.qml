@@ -28,8 +28,15 @@ Item {
                         Math.min(ideal, (maxWidth - (n - 1) * Kirigami.Units.smallSpacing) / n))
     }
 
-    implicitWidth: cards.implicitWidth
-    implicitHeight: cards.implicitHeight
+    readonly property real headerHeight: Kirigami.Units.iconSizes.small + Kirigami.Units.smallSpacing * 2
+    readonly property real thumbnailHeight: Math.round(cardWidth * 9 / 16)
+
+    // Computed up front instead of taken from the Row: the Row only lays out on
+    // the next polish, and a dialog shown with a zero-sized item stays hidden
+    width: windows.length * cardWidth + Math.max(0, windows.length - 1) * Kirigami.Units.smallSpacing
+    height: headerHeight + Kirigami.Units.smallSpacing + thumbnailHeight
+    implicitWidth: width
+    implicitHeight: height
 
     HoverHandler { id: hover }
 
@@ -46,7 +53,7 @@ Item {
                 required property var modelData
 
                 width: previews.cardWidth
-                height: header.height + Kirigami.Units.smallSpacing + thumbnail.height
+                height: previews.height
 
                 Rectangle {
                     anchors.fill: parent
@@ -69,6 +76,7 @@ Item {
                 RowLayout {
                     id: header
                     width: parent.width
+                    height: previews.headerHeight
                     spacing: Kirigami.Units.smallSpacing
 
                     Kirigami.Icon {
@@ -99,18 +107,11 @@ Item {
                     anchors.top: header.bottom
                     anchors.topMargin: Kirigami.Units.smallSpacing
                     width: parent.width
-                    height: Math.round(width * 9 / 16)
+                    height: previews.thumbnailHeight
 
                     TaskManager.ScreencastingRequest {
                         id: cast
                         uuid: card.modelData.minimized ? "" : card.modelData.uuid
-                    }
-
-                    PipeWire.PipeWireSourceItem {
-                        id: stream
-                        anchors.fill: parent
-                        nodeId: cast.nodeId
-                        visible: nodeId > 0 && ready
                     }
 
                     // Fallback for minimized windows or while the stream starts
@@ -119,8 +120,17 @@ Item {
                         width: Kirigami.Units.iconSizes.huge
                         height: width
                         source: card.modelData.icon
-                        visible: !stream.visible
+                        visible: !stream.ready
                         opacity: 0.8
+                    }
+
+                    // Must be visible as soon as there is a node: the item only
+                    // activates the PipeWire stream while it is visible
+                    PipeWire.PipeWireSourceItem {
+                        id: stream
+                        anchors.fill: parent
+                        nodeId: cast.nodeId
+                        visible: nodeId > 0
                     }
                 }
             }

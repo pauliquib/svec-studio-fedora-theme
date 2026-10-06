@@ -22,6 +22,10 @@ KCM.SimpleKCM {
     property alias cfg_outlineColorMode: outlineColorMode.currentIndex
     property alias cfg_outlineCustomColor: outlineCustomColor.color
     property alias cfg_backdropOpacity: backdropOpacity.value
+    property alias cfg_showIndicators: showIndicators.checked
+    property alias cfg_indicatorColorMode: indicatorColorMode.currentIndex
+    property alias cfg_indicatorCustomColor: indicatorCustomColor.color
+    property alias cfg_indicatorOutline: indicatorOutline.checked
     property alias cfg_showPreviews: showPreviews.checked
     property alias cfg_highlightWindows: highlightWindows.checked
     property alias cfg_audioIndicator: audioIndicator.checked
@@ -280,6 +284,36 @@ KCM.SimpleKCM {
             font: Kirigami.Theme.smallFont
             opacity: 0.7
             text: i18n("The outline keeps icons and labels legible on any background, like desktop icon labels. A wide or very opaque outline fills the inside of outline-style icons.")
+        }
+
+        Item { Kirigami.FormData.isSection: true }
+
+        QQC2.CheckBox {
+            id: showIndicators
+            Kirigami.FormData.label: i18n("Task indicators:")
+            text: i18n("Show a dot or line for running and active windows")
+        }
+
+        RowLayout {
+            Kirigami.FormData.label: i18n("Indicator color:")
+            enabled: showIndicators.checked
+
+            QQC2.ComboBox {
+                id: indicatorColorMode
+                model: [i18n("Accent color"), i18n("Text color"), i18n("From the app icon"), i18n("Custom")]
+            }
+            KQuickControls.ColorButton {
+                id: indicatorCustomColor
+                visible: indicatorColorMode.currentIndex === 3
+                showAlphaChannel: false
+                dialogTitle: i18n("Indicator Color")
+            }
+        }
+
+        QQC2.CheckBox {
+            id: indicatorOutline
+            enabled: showIndicators.checked && outlineOn
+            text: i18n("Contrast outline around indicators")
         }
 
         Item { Kirigami.FormData.isSection: true }

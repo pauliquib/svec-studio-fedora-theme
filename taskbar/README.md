@@ -11,6 +11,10 @@ Neighbouring icons slide aside so they are never covered.
 The motion is a port of the app rail in the header of [svec-elektro.cz](https://svec-elektro.cz),
 moved from HTML/CSS/JS to QML.
 
+| Hover label on the wallpaper | Contrast outline on a light page | Accent colour labels |
+|---|---|---|
+| ![Hover label](docs/screenshots/hover-label.png) | ![Light background](docs/screenshots/light-background.png) | ![Accent colour](docs/screenshots/accent-color.png) |
+
 ## Features
 
 - Icons only. The applet draws no background of its own and can also hide the background of the
@@ -33,7 +37,9 @@ moved from HTML/CSS/JS to QML.
   The badge follows the system accent color by default; theme circle, icon only and outline ring
   styles, three sizes and four corners are available.
 - Indicator on the panel edge side: a short line for the active window, an orange line for a window
-  that demands attention, and a dot for running windows.
+  that demands attention, and a dot for running windows. It can be turned off; its colour follows
+  the accent, the text colour, the app icon or a custom colour, and its outline can be turned off
+  separately.
 - **Left click** activates a window. Clicking the active window minimizes it. Clicking a group
   cycles through its windows, shows them side by side (KWin Window View) or shows a list.
 - **Middle click**, **scroll wheel** and the order of new tasks are configurable, the same way as in
@@ -86,6 +92,9 @@ It works by setting the panel containment's `backgroundHints` to `NoBackground`.
 | Outline opacity | 82 % |
 | Outline color: automatic (opposite of the label) / dark / light / custom | automatic |
 | Backdrop opacity | 90 % |
+| Show a dot or line for running and active windows | on |
+| Indicator color: accent / text color / from the app icon / custom | accent color |
+| Contrast outline around indicators | on |
 | Show window previews when hovering over tasks | off |
 | Hide other windows when hovering over previews | on |
 | Show an indicator when a task is playing audio | on |

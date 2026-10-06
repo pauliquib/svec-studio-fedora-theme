@@ -61,6 +61,21 @@
       <default>90</default>
     </entry>
 
+    <!-- Appearance: indicators under the tasks -->
+    <entry name="showIndicators" type="Bool">
+      <default>true</default>
+    </entry>
+    <!-- 0 accent color, 1 text color, 2 from the app icon, 3 custom -->
+    <entry name="indicatorColorMode" type="Int">
+      <default>0</default>
+    </entry>
+    <entry name="indicatorCustomColor" type="Color">
+      <default>#3daee9</default>
+    </entry>
+    <entry name="indicatorOutline" type="Bool">
+      <default>true</default>
+    </entry>
+
     <!-- Appearance: previews and audio -->
     <entry name="showPreviews" type="Bool">
       <default>false</default>

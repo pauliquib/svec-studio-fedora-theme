@@ -775,13 +775,30 @@ PlasmoidItem {
                         }
                     }
 
-                    // Running / active / attention indicator on the panel edge side
+                    // Running / active / attention indicator on the panel edge side. Drawn
+                    // in the outline layer, or directly on the chip when its outline is off
                     Rectangle {
                         readonly property bool emphasized: chip.isActive || chip.demandsAttention
                         readonly property int edge: Plasmoid.location
                         readonly property int length: emphasized ? Math.round(root.iconSize * 0.4) : (chip.isGroup ? 8 : 4)
+                        // 0 accent, 1 text color, 2 from the app icon, 3 custom
+                        readonly property int colorMode: root.cfg.indicatorColorMode
+                        readonly property color baseColor: {
+                            switch (colorMode) {
+                            case 1:
+                                return Kirigami.Theme.textColor
+                            case 2:
+                                return iconColors.highlight.a > 0 ? iconColors.highlight : Kirigami.Theme.textColor
+                            case 3:
+                                return root.cfg.indicatorCustomColor
+                            default:
+                                return chip.isActive ? Kirigami.Theme.highlightColor : Kirigami.Theme.textColor
+                            }
+                        }
 
-                        visible: !chip.isLauncher
+                        parent: root.useShadow && root.cfg.indicatorOutline ? content : chip
+                        z: 1
+                        visible: !chip.isLauncher && root.cfg.showIndicators
                         width: root.vertical ? 3 : length
                         height: root.vertical ? length : 3
                         radius: 1.5
@@ -791,10 +808,13 @@ PlasmoidItem {
                         y: edge === PlasmaCore.Types.TopEdge ? 1
                          : root.vertical ? (parent.height - height) / 2
                          : parent.height - height - 1
-                        color: chip.demandsAttention ? Kirigami.Theme.neutralTextColor
-                             : chip.isActive ? Kirigami.Theme.highlightColor
-                             : Kirigami.Theme.textColor
+                        color: chip.demandsAttention ? Kirigami.Theme.neutralTextColor : baseColor
                         opacity: emphasized ? 1 : 0.5
+
+                        Kirigami.ImageColors {
+                            id: iconColors
+                            source: parent.colorMode === 2 ? chip.model.decoration : ""
+                        }
 
                         Behavior on width {
                             NumberAnimation { duration: Kirigami.Units.shortDuration }
