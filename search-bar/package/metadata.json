@@ -1,0 +1,23 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "",
+                "Name": "psvec"
+            }
+        ],
+        "Category": "Utilities",
+        "Description": "Search/command input field embedded directly into the panel, powered by KRunner",
+        "Description[cs]": "Vyhledávací a příkazové pole vložené přímo do panelu (KRunner)",
+        "EnabledByDefault": true,
+        "Icon": "system-search",
+        "Id": "org.psvec.searchbar",
+        "License": "GPL-2.0-or-later",
+        "Name": "Search Bar",
+        "Name[cs]": "Vyhledávací pole",
+        "Version": "1.0.0",
+        "Website": "https://github.com/pauliquib/plasma-search-bar"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0"
+}
