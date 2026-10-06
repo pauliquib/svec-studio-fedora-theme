@@ -3,7 +3,7 @@ Name=Svec Studio Icons (Black)
 Comment=Outline icons from Svec Studio — fixed black — v1.2
 Inherits=breeze
 DisplayDepth=32
-Directories=scalable/apps,scalable/places,scalable/actions,scalable/mimetypes,scalable/devices,scalable/status,scalable/emblems,scalable/intl
+Directories=scalable/apps,scalable/places,scalable/actions,scalable/mimetypes,scalable/devices,scalable/status,scalable/emblems,scalable/intl,scalable/preferences,scalable/applets
 
 [scalable/apps]
 Context=Applications
@@ -56,6 +56,20 @@ Type=Scalable
 
 [scalable/intl]
 Context=International
+Size=48
+MinSize=16
+MaxSize=256
+Type=Scalable
+
+[scalable/preferences]
+Context=Preferences
+Size=48
+MinSize=16
+MaxSize=256
+Type=Scalable
+
+[scalable/applets]
+Context=Applications
 Size=48
 MinSize=16
 MaxSize=256

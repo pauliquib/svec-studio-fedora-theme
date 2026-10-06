@@ -1755,6 +1755,90 @@ FDO_MAP: dict[str, dict[str, str]] = {
     },
 }
 
+# --- kontexty "preferences" a "applets" ------------------------------------------------
+# KIconLoader filtruje adresáře podle Context — KCM/plasmoid stránky žádají ikony
+# z Preferences/applets kontextu; jména jen v apps/ se pak nenajdou a padá to na breeze.
+FDO_MAP["preferences"] = {
+    # zrcadlení všech preferences-* z apps
+    **{k: v for k, v in FDO_MAP["apps"].items() if k.startswith("preferences-")},
+    # breeze preferences/ jména (KCM a služby)
+    "mediacontrol": "svec-sc-player-play",
+    "krunner": "svec-sc-rocket",
+    "plasmashell": "svec-sc-layout-dashboard",
+    "plasma": "cz.svec.Studio",
+    "plasma-search": "svec-sc-search",
+    "plasmagik": "svec-sc-layout-dashboard",
+    "kdeconnect": "svec-sc-device-mobile",
+    "kded5": "svec-sc-activity",
+    "kded6": "svec-sc-activity",
+    "ksmserver": "svec-sc-power",
+    "kaccess": "svec-sc-user",
+    "device-notifier": "svec-sc-usb",
+    "drive-removable-media": "svec-sc-usb",
+    "gtkconfig": "svec-sc-palette",
+    "kde-gtk-config": "svec-sc-palette",
+    "face-smile": "svec-sc-mood-smile",
+    "financial-schedule": "svec-sc-calendar",
+    "podcast-amarok": "svec-sc-antenna",
+}
+FDO_MAP["applets"] = {
+    # org.kde.plasma.* widget ikony (System Tray Settings apod.)
+    "org.kde.plasma.systemtray": "svec-sc-layout-grid",
+    "org.kde.plasma.mediacontroller": "svec-sc-player-play",
+    "org.kde.plasma.battery": "svec-sc-bolt",
+    "org.kde.plasma.brightness": "svec-sc-sun",
+    "org.kde.plasma.volume": "svec-sc-volume",
+    "org.kde.plasma.clipboard": "svec-sc-clipboard-list",
+    "org.kde.plasma.devicenotifier": "svec-sc-usb",
+    "org.kde.plasma.diskquota": "svec-sc-database",
+    "org.kde.plasma.networkmanagement": "svec-sc-wifi",
+    "org.kde.plasma.notifications": "svec-sc-bell",
+    "org.kde.plasma.weather": "svec-sc-cloud",
+    "org.kde.plasma.keyboardlayout": "svec-sc-keyboard",
+    "org.kde.plasma.lockkeys": "svec-sc-keyboard",
+    "org.kde.plasma.manage-inputmethod": "svec-sc-keyboard",
+    "org.kde.plasma.printmanager": "svec-sc-printer",
+    "org.kde.plasma.vault": "svec-sc-safe",
+    "org.kde.plasma.digitalclock": "svec-sc-clock",
+    "org.kde.plasma.analogclock": "svec-sc-clock",
+    "org.kde.plasma.binaryclock": "svec-sc-clock",
+    "org.kde.plasma.fuzzyclock": "svec-sc-clock",
+    "org.kde.plasma.calendar": "svec-sc-calendar",
+    "org.kde.plasma.date": "svec-sc-calendar",
+    "org.kde.plasma.colorpicker": "svec-sc-color-picker",
+    "org.kde.plasma.comic": "svec-sc-mood-smile",
+    "org.kde.plasma.fifteenpuzzle": "svec-sc-puzzle",
+    "org.kde.plasma.notes": "svec-sc-note",
+    "org.kde.plasma.timer": "svec-sc-hourglass",
+    "org.kde.plasma.calculator": "svec-sc-calculator",
+    "org.kde.plasma.userswitcher": "svec-sc-user",
+    "org.kde.plasma.lock_logout": "svec-sc-lock",
+    "org.kde.plasma.minimizeall": "svec-sc-minimize",
+    "org.kde.plasma.showdesktop": "svec-sc-device-desktop",
+    "org.kde.plasma.showActivityManager": "svec-sc-activity",
+    "org.kde.plasma.activitybar": "svec-sc-activity",
+    "org.kde.plasma.systemloadviewer": "svec-sc-activity",
+    "org.kde.plasma.systemmonitor.cpu": "svec-sc-cpu",
+    "org.kde.plasma.systemmonitor.memory": "svec-sc-activity",
+    "org.kde.plasma.systemmonitor.net": "svec-sc-wifi",
+    "org.kde.plasma.systemmonitor.diskactivity": "svec-sc-database",
+    "org.kde.plasma.systemmonitor.diskusage": "svec-sc-database",
+    "org.kde.plasma.taskmanager": "svec-sc-list",
+    "org.kde.plasma.icontasks": "svec-sc-layout-grid",
+    "org.kde.plasma.windowlist": "svec-sc-layout-grid",
+    "org.kde.plasma.quicklaunch": "svec-sc-rocket",
+    "org.kde.plasma.kicker": "cz.svec.Studio",
+    "org.kde.plasma.kickoff": "cz.svec.Studio",
+    "org.kde.plasma.kickerdash": "cz.svec.Studio",
+    "org.kde.plasma.kickofflegacy": "cz.svec.Studio",
+    "org.kde.plasma.frame": "svec-sc-photo",
+    "org.kde.plasma.folder": "svec-sc-folder",
+    "org.kde.plasma.pager": "svec-sc-layout-grid",
+    "org.kde.kdeconnect": "svec-sc-device-mobile",
+    "org.kde.ktpcontactlist": "svec-sc-user",
+    "org.kde.muonnotifier": "svec-sc-package",
+}
+
 _ENTRY_RE = re.compile(r'(?:^|,)\s*(?:(\w+)|"([^"]+)")\s*:\s*\'((?:[^\'\\]|\\.)*)\'', re.S)
 _SVG_RE = re.compile(r"<svg\b([^>]*)>([\s\S]*?)</svg>")
 _STRIP_ATTRS_RE = re.compile(r'\s(?:aria-hidden|width|height|id|version|class)="[^"]*"')
@@ -1901,6 +1985,8 @@ _CONTEXT_NAMES = {
     "status": "Status",
     "emblems": "Emblems",
     "intl": "International",
+    "preferences": "Preferences",
+    "applets": "Applications",
 }
 
 
