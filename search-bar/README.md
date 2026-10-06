@@ -1,5 +1,7 @@
 # Search Bar for KDE Plasma 6
 
+Part of [Svec Studio Fedora theme](../README.md).
+
 [![Plasma 6](https://img.shields.io/badge/KDE%20Plasma-6.x-1d99f3?logo=kde&logoColor=white)](https://kde.org/plasma-desktop/)
 [![QML](https://img.shields.io/badge/QML-Qt%206-41cd52?logo=qt&logoColor=white)](https://doc.qt.io/qt-6/qtqml-index.html)
 [![License: GPL v2+](https://img.shields.io/badge/license-GPL--2.0--or--later-blue)](LICENSE)
@@ -76,8 +78,8 @@ Right-click the widget → **Configure Search Bar…**. Every feature has its ow
 ## Installation
 
 ```bash
-git clone https://github.com/pauliquib/plasma-search-bar.git
-cd plasma-search-bar
+git clone https://github.com/pauliquib/svec-studio-fedora-theme.git
+cd svec-studio-fedora-theme/search-bar
 ./install.sh        # or: kpackagetool6 -t Plasma/Applet -i package
 ```
 
