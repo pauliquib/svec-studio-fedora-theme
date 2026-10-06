@@ -1,0 +1,26 @@
+{
+    "KPackageStructure": "Plasma/Applet",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "",
+                "Name": "psvec"
+            }
+        ],
+        "Category": "Windows and Tasks",
+        "Description": "Icon-only task manager without background; the hovered icon smoothly grows into a pill with the window title (svec-elektro.cz app-chip style)",
+        "Description[cs]": "Správce úloh jen s ikonami bez pozadí; ikona pod kurzorem se plynule rozbalí do štítku s názvem okna (styl app-chip ze svec-elektro.cz)",
+        "EnabledByDefault": true,
+        "Icon": "preferences-system-windows",
+        "Id": "org.psvec.chiptasks",
+        "License": "GPL-2.0-or-later",
+        "Name": "Svec Studio Taskbar",
+        "Name[cs]": "Svec Studio Taskbar",
+        "Version": "1.0.0",
+        "Website": "https://github.com/pauliquib/svec-studio-taskbar"
+    },
+    "X-Plasma-API-Minimum-Version": "6.0",
+    "X-Plasma-Provides": [
+        "org.kde.plasma.multitasking"
+    ]
+}
