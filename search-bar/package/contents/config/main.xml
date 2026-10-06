@@ -4,10 +4,209 @@
       xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
                           http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
   <kcfgfile name=""/>
+
   <group name="General">
     <entry name="spacing" type="Int">
       <label>Mezera okolo vyhledávacího pole v pixelech</label>
       <default>5</default>
+    </entry>
+    <entry name="popupMaxHeight" type="Int">
+      <label>Maximální výška okna s výsledky (v řádcích mřížky)</label>
+      <default>22</default>
+    </entry>
+    <entry name="showFooterHints" type="Bool">
+      <label>Zobrazovat nápovědu klávesových zkratek pod výsledky</label>
+      <default>true</default>
+    </entry>
+    <entry name="highlightMatches" type="Bool">
+      <label>Zvýrazňovat shodu s dotazem ve vlastních výsledcích</label>
+      <default>true</default>
+    </entry>
+    <entry name="showCategoryHeaders" type="Bool">
+      <label>Zobrazovat nadpisy kategorií ve vlastních výsledcích</label>
+      <default>true</default>
+    </entry>
+    <entry name="actionsEnabled" type="Bool">
+      <label>Akce u výsledků (tlačítka a Shift/Alt+Enter)</label>
+      <default>true</default>
+    </entry>
+  </group>
+
+  <group name="Terminal">
+    <entry name="terminalEnabled" type="Bool">
+      <label>Povolit spouštění příkazů v terminálu</label>
+      <default>true</default>
+    </entry>
+    <entry name="terminalPrefix" type="String">
+      <label>Prefix, kterým začíná příkaz pro terminál</label>
+      <default>&gt;</default>
+    </entry>
+    <entry name="terminalApp" type="String">
+      <label>Terminál, který se má spustit</label>
+      <default>konsole</default>
+    </entry>
+    <entry name="terminalCustom" type="String">
+      <label>Vlastní příkaz terminálu (následuje program a argumenty)</label>
+      <default></default>
+    </entry>
+    <entry name="terminalKeepOpen" type="Bool">
+      <label>Ponechat terminál otevřený po dokončení příkazu</label>
+      <default>true</default>
+    </entry>
+    <entry name="terminalWorkdir" type="String">
+      <label>Pracovní složka pro příkazy (prázdné = domovská složka)</label>
+      <default></default>
+    </entry>
+    <entry name="terminalBackgroundEnabled" type="Bool">
+      <label>Povolit spouštění příkazů na pozadí s výstupem v notifikaci</label>
+      <default>true</default>
+    </entry>
+    <entry name="terminalBackgroundDefault" type="Bool">
+      <label>Enter spouští příkaz na pozadí místo v okně terminálu</label>
+      <default>false</default>
+    </entry>
+    <entry name="terminalSudoEnabled" type="Bool">
+      <label>Povolit akci „Spustit jako root“</label>
+      <default>true</default>
+    </entry>
+    <entry name="terminalSuggestCommands" type="Bool">
+      <label>Navrhovat příkazy z $PATH při psaní prvního slova</label>
+      <default>true</default>
+    </entry>
+    <entry name="terminalSuggestPaths" type="Bool">
+      <label>Navrhovat soubory a složky při psaní cesty</label>
+      <default>true</default>
+    </entry>
+    <entry name="terminalSuggestMax" type="Int">
+      <label>Maximální počet návrhů</label>
+      <default>6</default>
+    </entry>
+    <entry name="terminalHistoryEnabled" type="Bool">
+      <label>Pamatovat si historii příkazů terminálu</label>
+      <default>true</default>
+    </entry>
+    <entry name="terminalHistoryMax" type="Int">
+      <label>Maximální počet příkazů v historii</label>
+      <default>50</default>
+    </entry>
+    <entry name="terminalHistory" type="StringList">
+      <label>Historie příkazů terminálu (nejnovější první)</label>
+      <default></default>
+    </entry>
+  </group>
+
+  <group name="Files">
+    <entry name="filesEnabled" type="Bool">
+      <label>Povolit hledání souborů</label>
+      <default>true</default>
+    </entry>
+    <entry name="filesPrefix" type="String">
+      <label>Prefix pro hledání souborů</label>
+      <default>/</default>
+    </entry>
+    <entry name="filesDirectory" type="String">
+      <label>Složka, ve které se hledá (prázdné = domovská složka)</label>
+      <default></default>
+    </entry>
+    <entry name="filesTool" type="String">
+      <label>Nástroj pro hledání: auto, fd, find, locate, baloo</label>
+      <default>auto</default>
+    </entry>
+    <entry name="filesMaxResults" type="Int">
+      <label>Maximální počet nalezených souborů</label>
+      <default>30</default>
+    </entry>
+    <entry name="filesShowHidden" type="Bool">
+      <label>Hledat i ve skrytých souborech a složkách</label>
+      <default>false</default>
+    </entry>
+    <entry name="filesOpenCommand" type="String">
+      <label>Příkaz pro otevření souboru (prázdné = výchozí aplikace)</label>
+      <default></default>
+    </entry>
+  </group>
+
+  <group name="Modes">
+    <entry name="systemEnabled" type="Bool">
+      <label>Povolit systémové akce</label>
+      <default>true</default>
+    </entry>
+    <entry name="systemPrefix" type="String">
+      <label>Prefix pro systémové akce</label>
+      <default>:</default>
+    </entry>
+    <entry name="systemConfirm" type="Bool">
+      <label>Potvrzovat restart, vypnutí a odhlášení</label>
+      <default>true</default>
+    </entry>
+    <entry name="webEnabled" type="Bool">
+      <label>Povolit hledání na webu</label>
+      <default>true</default>
+    </entry>
+    <entry name="webPrefix" type="String">
+      <label>Prefix pro hledání na webu</label>
+      <default>!</default>
+    </entry>
+    <entry name="webEngines" type="StringList">
+      <label>Vyhledávače ve tvaru název|URL s %s (první je výchozí)</label>
+      <default>DuckDuckGo|https://duckduckgo.com/?q=%s,Google|https://www.google.com/search?q=%s,Wikipedie|https://cs.wikipedia.org/w/index.php?search=%s,GitHub|https://github.com/search?q=%s</default>
+    </entry>
+    <entry name="helpEnabled" type="Bool">
+      <label>Povolit nápovědu k prefixům</label>
+      <default>true</default>
+    </entry>
+    <entry name="helpPrefix" type="String">
+      <label>Prefix pro nápovědu</label>
+      <default>?</default>
+    </entry>
+    <entry name="runnerModesEnabled" type="Bool">
+      <label>Povolit prefixy omezující hledání na jeden runner KRunneru</label>
+      <default>true</default>
+    </entry>
+    <entry name="runnerModes" type="StringList">
+      <label>Prefixy runnerů ve tvaru prefix|id runneru|popis</label>
+      <default>@|windows|Otevřená okna,=|calculator|Kalkulačka</default>
+    </entry>
+  </group>
+
+  <group name="History">
+    <entry name="historyEnabled" type="Bool">
+      <label>Pamatovat si nedávno spuštěné položky</label>
+      <default>true</default>
+    </entry>
+    <entry name="historyShowOnFocus" type="Bool">
+      <label>Zobrazit nedávné položky po kliknutí do prázdného pole</label>
+      <default>true</default>
+    </entry>
+    <entry name="historyMax" type="Int">
+      <label>Maximální počet nedávných položek</label>
+      <default>15</default>
+    </entry>
+    <entry name="history" type="StringList">
+      <label>Nedávné položky jako JSON (nejnovější první)</label>
+      <default></default>
+    </entry>
+  </group>
+
+  <group name="Aliases">
+    <entry name="aliasesEnabled" type="Bool">
+      <label>Povolit vlastní příkazy a aliasy</label>
+      <default>true</default>
+    </entry>
+    <entry name="aliases" type="StringList">
+      <label>Aliasy jako JSON objekty {name, command, mode, workdir}</label>
+      <default></default>
+    </entry>
+  </group>
+
+  <group name="Runners">
+    <entry name="runnerFilterEnabled" type="Bool">
+      <label>Používat jen vybrané runnery KRunneru v daném pořadí</label>
+      <default>false</default>
+    </entry>
+    <entry name="runnerFilter" type="StringList">
+      <label>Id povolených runnerů v pořadí, v jakém se zobrazují</label>
+      <default>krunner_services,krunner_systemsettings,calculator,windows,baloosearch,krunner_shell</default>
     </entry>
   </group>
 </kcfg>
