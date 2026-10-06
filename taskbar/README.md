@@ -1,5 +1,7 @@
 # Svec Studio Taskbar for KDE Plasma 6
 
+In Plasma the widget is listed as **Expanding Icons Task Manager** (Czech: *Správce úloh s rozbalovacími ikonami*).
+
 [![Plasma 6](https://img.shields.io/badge/KDE%20Plasma-6.x-1d99f3?logo=kde&logoColor=white)](https://kde.org/plasma-desktop/)
 [![QML](https://img.shields.io/badge/QML-Qt%206-41cd52?logo=qt&logoColor=white)](https://doc.qt.io/qt-6/qtqml-index.html)
 [![License: GPL v2+](https://img.shields.io/badge/license-GPL--2.0--or--later-blue)](LICENSE)
@@ -60,7 +62,7 @@ cd svec-studio-taskbar
 ./install.sh
 ```
 
-Then add **Svec Studio Taskbar** to a panel: Edit Mode → Add Widgets. You will probably want to
+Then add **Expanding Icons Task Manager** to a panel: Edit Mode → Add Widgets. You will probably want to
 remove the stock Task Manager from that panel.
 
 To update, run `git pull && ./install.sh`. To uninstall, run `kpackagetool6 -t Plasma/Applet -r org.psvec.chiptasks`.

@@ -1,0 +1,11 @@
+[Colors]
+Accent=94,156,255
+Panel=16,22,38
+Header=26,36,62
+HeaderInactive=20,26,42
+TitleTextInactive=140,152,178
+WindowBackground=24,30,46
+ViewBackground=16,20,32
+
+[Decoration]
+BorderSize=Tiny

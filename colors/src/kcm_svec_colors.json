@@ -1,0 +1,12 @@
+{
+    "KPlugin": {
+        "Authors": [ { "Name": "psvec" } ],
+        "Description": "Accent, panel and window colours and window borders in one place",
+        "Icon": "preferences-desktop-color",
+        "License": "GPL-2.0-or-later",
+        "Name": "Panel & Window Colours"
+    },
+    "X-KDE-Keywords": "accent,panel,window,title bar,titlebar,border,outline,shadow,colour,color,theme,preset,border colour,svec studio",
+    "X-KDE-System-Settings-Parent-Category": "themes",
+    "X-KDE-Weight": 25
+}

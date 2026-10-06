@@ -2274,7 +2274,7 @@ def index_theme(theme: str, meta: dict[str, str]) -> str:
     dirs = list(dict.fromkeys(["apps", *FDO_MAP, *BREEZE_CTX.values()]))
     sections = [
         "[Icon Theme]",
-        f"Name=Svec Studio Icons ({meta['label']})",
+        f"Name=Outline Icons ({meta['label']})",
         f"Comment={meta['comment']} — v{meta['version']}",
         "Inherits=breeze",
         "DisplayDepth=32",

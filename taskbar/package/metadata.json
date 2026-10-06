@@ -14,8 +14,8 @@
         "Icon": "preferences-system-windows",
         "Id": "org.psvec.chiptasks",
         "License": "GPL-2.0-or-later",
-        "Name": "Svec Studio Taskbar",
-        "Name[cs]": "Svec Studio Taskbar",
+        "Name": "Expanding Icons Task Manager",
+        "Name[cs]": "Správce úloh s rozbalovacími ikonami",
         "Version": "1.0.0",
         "Website": "https://github.com/pauliquib/svec-studio-taskbar"
     },

@@ -1,0 +1,12 @@
+[Colors]
+Accent=180,180,186
+Panel=30,30,30
+Header=48,48,48
+HeaderInactive=36,36,36
+TitleTextInactive=140,140,140
+WindowBackground=38,38,38
+ViewBackground=26,26,26
+
+[Decoration]
+RoundedCorners=false
+ShadowSize=ShadowMedium

@@ -1,0 +1,208 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+#include "applier.h"
+#include "themesettings.h"
+
+#include <KConfig>
+#include <KConfigGroup>
+
+#include <QDBusConnection>
+#include <QDBusMessage>
+#include <QDir>
+#include <QDirIterator>
+#include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QProcess>
+#include <QStandardPaths>
+
+namespace {
+
+// Breeze Dark is the base the generated files start from.
+const QString kBreezeDarkScheme = QStringLiteral("/usr/share/color-schemes/BreezeDark.colors");
+const QString kBreezeDarkTheme = QStringLiteral("/usr/share/plasma/desktoptheme/breeze-dark");
+
+const QString kSchemePrefix = QStringLiteral("SvecStudio");
+const QString kThemePrefix = QStringLiteral("svec-studio-panel");
+
+QString userDataDir(const QString &relative)
+{
+    return QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) + QLatin1Char('/') + relative;
+}
+
+void copyTree(const QString &from, const QString &to)
+{
+    QDirIterator it(from, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        it.next();
+        const QString target = to + QLatin1Char('/') + QDir(from).relativeFilePath(it.filePath());
+        if (it.fileInfo().isDir()) {
+            QDir().mkpath(target);
+        } else {
+            QDir().mkpath(QFileInfo(target).absolutePath());
+            QFile::remove(target);
+            QFile::copy(it.filePath(), target);
+        }
+    }
+}
+
+QString writeColourScheme(const ThemeSettings &s)
+{
+    const QString name = kSchemePrefix + QLatin1Char('-') + s.schemeFingerprint();
+    const QString target = userDataDir(QStringLiteral("color-schemes/%1.colors").arg(name));
+    QDir().mkpath(QFileInfo(target).absolutePath());
+    QFile::remove(target);
+    QFile::copy(kBreezeDarkScheme, target);
+    QFile(target).setPermissions(QFile::ReadOwner | QFile::WriteOwner | QFile::ReadGroup | QFile::ReadOther);
+
+    KConfig scheme(target, KConfig::SimpleConfig);
+    KConfigGroup general(&scheme, QStringLiteral("General"));
+    general.writeEntry("Name", QStringLiteral("Custom (Panel & Window Colours)"));
+    general.writeEntry("ColorScheme", name);
+
+    KConfigGroup header(&scheme, QStringLiteral("Colors:Header"));
+    header.writeEntry("BackgroundNormal", s.header);
+    header.writeEntry("ForegroundNormal", s.titleText);
+    KConfigGroup headerInactive = header.group(QStringLiteral("Inactive"));
+    headerInactive.writeEntry("BackgroundNormal", s.headerInactive);
+    headerInactive.writeEntry("ForegroundNormal", s.titleTextInactive);
+
+    KConfigGroup(&scheme, QStringLiteral("Colors:Window")).writeEntry("BackgroundNormal", s.windowBackground);
+    KConfigGroup(&scheme, QStringLiteral("Colors:View")).writeEntry("BackgroundNormal", s.viewBackground);
+
+    KConfigGroup wm(&scheme, QStringLiteral("WM"));
+    wm.writeEntry("activeBackground", s.header);
+    wm.writeEntry("activeForeground", s.titleText);
+    wm.writeEntry("inactiveBackground", s.headerInactive);
+    wm.writeEntry("inactiveForeground", s.titleTextInactive);
+    scheme.sync();
+    return name;
+}
+
+// plasma-apply-colorscheme does not copy the inactive header group into kdeglobals,
+// and the window decoration reads its colours from there, so write them directly.
+void patchGlobals(const ThemeSettings &s)
+{
+    KConfig globals(QStringLiteral("kdeglobals"));
+    KConfigGroup header(&globals, QStringLiteral("Colors:Header"));
+    header.writeEntry("BackgroundNormal", s.header, KConfig::Notify);
+    header.writeEntry("ForegroundNormal", s.titleText, KConfig::Notify);
+    KConfigGroup headerInactive = header.group(QStringLiteral("Inactive"));
+    headerInactive.writeEntry("BackgroundNormal", s.headerInactive, KConfig::Notify);
+    headerInactive.writeEntry("ForegroundNormal", s.titleTextInactive, KConfig::Notify);
+
+    KConfigGroup wm(&globals, QStringLiteral("WM"));
+    wm.writeEntry("activeBackground", s.header, KConfig::Notify);
+    wm.writeEntry("activeForeground", s.titleText, KConfig::Notify);
+    wm.writeEntry("inactiveBackground", s.headerInactive, KConfig::Notify);
+    wm.writeEntry("inactiveForeground", s.titleTextInactive, KConfig::Notify);
+    globals.sync();
+}
+
+QString writePanelTheme(const ThemeSettings &s)
+{
+    const QString name = kThemePrefix + QLatin1Char('-') + s.panelFingerprint();
+    const QString target = userDataDir(QStringLiteral("plasma/desktoptheme/%1").arg(name));
+    copyTree(kBreezeDarkTheme, target);
+
+    KConfig colours(target + QStringLiteral("/colors"), KConfig::SimpleConfig);
+    KConfigGroup window(&colours, QStringLiteral("Colors:Window"));
+    window.writeEntry("BackgroundNormal", s.panel);
+    window.writeEntry("ForegroundNormal", s.panelText);
+    colours.sync();
+
+    // Own metadata, so the style does not show up as a second "Breeze Dark".
+    const QJsonObject plugin{
+        {QStringLiteral("Id"), name},
+        {QStringLiteral("Name"), QStringLiteral("Custom Panel")},
+        {QStringLiteral("Description"), QStringLiteral("Generated by Panel & Window Colours")},
+        {QStringLiteral("License"), QStringLiteral("LGPL")},
+        {QStringLiteral("EnabledByDefault"), true},
+    };
+    const QJsonObject metadata{{QStringLiteral("KPlugin"), plugin}, {QStringLiteral("X-Plasma-API"), QStringLiteral("5.0")}};
+    QFile file(target + QStringLiteral("/metadata.json"));
+    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        file.write(QJsonDocument(metadata).toJson());
+    }
+    return name;
+}
+
+void writeDecoration(const ThemeSettings &s)
+{
+    KConfig breeze(QStringLiteral("breezerc"));
+    KConfigGroup common(&breeze, QStringLiteral("Common"));
+    common.writeEntry("OutlineEnabled", s.outline);
+    common.writeEntry("RoundedCorners", s.roundedCorners);
+    common.writeEntry("OutlineCloseButton", s.outlineCloseButton);
+    common.writeEntry("ShadowSize", s.shadowSize);
+    common.writeEntry("ShadowStrength", s.shadowStrength);
+    common.writeEntry("ShadowColor", s.shadowColor);
+    KConfigGroup windeco(&breeze, QStringLiteral("Windeco"));
+    windeco.writeEntry("TitleAlignment", s.titleAlignment);
+    windeco.writeEntry("ButtonSize", s.buttonSize);
+    windeco.writeEntry("DrawBackgroundGradient", s.titleGradient);
+    windeco.writeEntry("DrawBorderOnMaximizedWindows", s.borderOnMaximized);
+    breeze.sync();
+
+    KConfig kwinrc(QStringLiteral("kwinrc"));
+    KConfigGroup deco(&kwinrc, QStringLiteral("org.kde.kdecoration2"));
+    const bool automatic = s.borderSize == QLatin1String("Auto");
+    deco.writeEntry("BorderSizeAuto", automatic);
+    if (automatic) {
+        deco.deleteEntry("BorderSize");
+    } else {
+        deco.writeEntry("BorderSize", s.borderSize);
+    }
+    kwinrc.sync();
+}
+
+// Generated files whose name differs from the ones just applied are no longer used.
+void removeOldFiles(const QString &scheme, const QString &theme)
+{
+    QDir schemes(userDataDir(QStringLiteral("color-schemes")));
+    const QStringList schemeFiles = schemes.entryList({kSchemePrefix + QStringLiteral("*.colors")}, QDir::Files);
+    for (const QString &file : schemeFiles) {
+        if (file != scheme + QStringLiteral(".colors")) {
+            schemes.remove(file);
+        }
+    }
+
+    QDir themes(userDataDir(QStringLiteral("plasma/desktoptheme")));
+    const QStringList themeDirs = themes.entryList({kThemePrefix + QLatin1Char('*')}, QDir::Dirs | QDir::NoDotAndDotDot);
+    for (const QString &dir : themeDirs) {
+        if (dir != theme) {
+            QDir(themes.filePath(dir)).removeRecursively();
+        }
+    }
+}
+
+} // namespace
+
+namespace Applier
+{
+
+void apply(const ThemeSettings &s)
+{
+    // The accent must be in place before the scheme is applied, which tints with it.
+    {
+        KConfig globals(QStringLiteral("kdeglobals"));
+        KConfigGroup general(&globals, QStringLiteral("General"));
+        general.writeEntry("AccentColor", QList<int>{s.accent.red(), s.accent.green(), s.accent.blue()});
+        general.writeEntry("AccentColorFromWallpaper", false);
+        globals.sync();
+    }
+
+    const QString scheme = writeColourScheme(s);
+    const QString theme = writePanelTheme(s);
+    QProcess::execute(QStringLiteral("plasma-apply-colorscheme"), {scheme});
+    patchGlobals(s);
+    QProcess::execute(QStringLiteral("plasma-apply-desktoptheme"), {theme});
+    writeDecoration(s);
+    removeOldFiles(scheme, theme);
+
+    QDBusConnection::sessionBus().call(QDBusMessage::createMethodCall(QStringLiteral("org.kde.KWin"),
+                                                                      QStringLiteral("/KWin"),
+                                                                      QStringLiteral("org.kde.KWin"),
+                                                                      QStringLiteral("reconfigure")));
+}
+
+}

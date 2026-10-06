@@ -32,7 +32,7 @@ cp -r themes/SvecStudio-* ~/.local/share/icons/
 python3 build.py --install
 ```
 
-Aktivace: **System Settings → Colors & Themes → Icons → „Svec Studio Icons"**, případně:
+Aktivace: **System Settings → Colors & Themes → Icons → „Outline Icons (Accent / White / Black)"**, případně:
 
 ```bash
 kwriteconfig6 --file kdeglobals --group Icons --key Theme SvecStudio-Accent

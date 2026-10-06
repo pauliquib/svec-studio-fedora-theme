@@ -1,0 +1,6 @@
+# Stock Breeze Dark. Keys left out keep the module defaults (also Breeze Dark).
+[Colors]
+Accent=61,174,233
+Panel=32,35,38
+Header=41,44,48
+HeaderInactive=32,35,38
