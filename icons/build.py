@@ -1842,6 +1842,36 @@ FDO_MAP["applets"] = {
     "org.kde.muonnotifier": "svec-sc-package",
 }
 
+# --- Ovládací prvky (šipky, okna, dialogy, média, úpravy) ----------------------------
+# Symbolická varianta (-symbolic) musí mít stejný tvar jako základní jméno.
+# Bez tohoto by breeze_completion podle klíčových slov dosadil nesouvisející glyf
+# (např. window-close-symbolic → mrak, view-refresh-symbolic → oko).
+_CONTROL_ACTIONS = {
+    "arrow-up": "svec-arrow-up",
+    "arrow-down": "svec-arrow-down",
+    "arrow-left": "svec-arrow-left",
+    "arrow-right": "svec-arrow-right",
+    "arrow-up-double": "svec-kit-chevron-up",
+    "arrow-down-double": "svec-kit-chevron-down",
+    "arrow-left-double": "svec-kit-chevron-left",
+    "arrow-right-double": "svec-kit-chevron-right",
+    "edit-add": "svec-kit-plus",
+    "edit-remove": "svec-kit-minus",
+    "system-search": "svec-sc-search",
+    "format-text-bold": "svec-bold",
+    "format-text-italic": "svec-italic",
+    "format-text-underline": "svec-underline",
+}
+for _name, _src in _CONTROL_ACTIONS.items():
+    FDO_MAP["actions"].setdefault(_name, _src)
+# jen pro kontext actions (covered je globální přes kontexty — do FDO_MAP by potlačilo
+# stejnojmenné ikony v places/status apod.)
+CONTROL_SYMBOLIC = {
+    f"{_name}-symbolic": _src
+    for _name, _src in FDO_MAP["actions"].items()
+    if not _name.endswith("-symbolic")
+}
+
 # --- Breeze completion ---------------------------------------------------------------
 # Jména, která má Breeze a my ne → dogenerujeme s glyph podle klíčových slov
 # (nebo neutrální per kontext). Cíl: plná nahraditelnost Breeze bez barevných fallbacků.
@@ -2058,7 +2088,7 @@ def breeze_completions(icons: dict[str, tuple[str, str]]) -> dict[str, dict[str,
     out: dict[str, dict[str, str]] = {}
     for ctx, names in breeze_names().items():
         for name in names:
-            if name in covered:
+            if name in covered or (ctx == "actions" and name in CONTROL_SYMBOLIC):
                 continue
             # -symbolic/-symbolic-ltr/-symbolic-rtl → zkus základní jméno
             base = re.sub(r"-symbolic(-ltr|-rtl)?$", "", name)
@@ -2297,6 +2327,13 @@ def build_themes(out_dir: Path) -> None:
                     attrs, inner = icons[src]
                     (ctx_dir / f"{fname}.svg").write_text(render_icon(attrs, inner, theme), encoding="utf-8")
                 count += 1
+        for fdo_name, src in CONTROL_SYMBOLIC.items():
+            if src not in icons:
+                continue
+            attrs, inner = icons[src]
+            (theme_dir / "scalable" / "actions" / f"{fdo_name}.svg").write_text(
+                render_icon(attrs, inner, theme), encoding="utf-8")
+            count += 1
         # syntetizované ikony (baterie apod. — bez svec-* zdroje)
         for ctx, synth in SYNTH_ICONS.items():
             ctx_dir = theme_dir / "scalable" / ctx
