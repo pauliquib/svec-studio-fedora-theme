@@ -34,6 +34,8 @@ PlasmoidItem {
     readonly property int slotSize: Math.min(thickness, Math.round(iconSize * 1.27))
     readonly property int spacing: Math.round(slotSize * 0.19)
     readonly property int chipPadding: Math.round((slotSize - iconSize) / 2)
+    // Extra room after the label so the text doesn't end flush with the pill edge
+    readonly property int labelEndPadding: spacing
     readonly property bool canExpand: !vertical
 
     // ---- tasks ----------------------------------------------------------------
@@ -152,7 +154,7 @@ PlasmoidItem {
         readonly property real railLength: count * root.slotSize + Math.max(0, count - 1) * root.spacing
         // Free space on each side so a fully grown pill never leaves the applet
         readonly property int reserve: root.canExpand && root.cfg.reserveSpace && count > 0
-            ? Math.ceil((root.cfg.maxLabelWidth + root.spacing) / 2) : 0
+            ? Math.ceil((root.cfg.maxLabelWidth + root.spacing + root.labelEndPadding) / 2) : 0
         readonly property real mainLength: railLength + 2 * reserve
 
         // Web values 56 / 110 / 28 px against a 37.6 px slot
@@ -332,7 +334,7 @@ PlasmoidItem {
                     return root.cfg.labelSource === 0 ? (model.display || app) : app
                 }
                 readonly property real labelWidth: Math.min(Math.ceil(metrics.advanceWidth), root.cfg.maxLabelWidth)
-                readonly property real grow: root.canExpand && labelText.length > 0 ? labelWidth + root.spacing : 0
+                readonly property real grow: root.canExpand && labelText.length > 0 ? labelWidth + root.spacing + root.labelEndPadding : 0
                 readonly property real slotCenter: rail.reserve + index * (root.slotSize + root.spacing) + root.slotSize / 2
 
                 onGrowChanged: rail.syncNudges()

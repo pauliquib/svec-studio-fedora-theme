@@ -70,7 +70,7 @@ Each icon sits in a **fixed slot**. The chip is centered on that slot and grows 
 never jumps. A single value per chip, `expand` (0–1), drives everything:
 
 ```
-chip width    = slot + expand × grow        grow = measured label width + gap
+chip width    = slot + expand × grow        grow = measured label width + gap + end padding
 label clip    = expand × labelWidth         label opacity = 0.25 + expand × 0.9
 pill tint     = expand × 10 % text colour
 neighbour     ± expand × grow / 2           (left ones move left, right ones move right)
