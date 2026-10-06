@@ -12,9 +12,15 @@ Pack pokrývá standardní freedesktop jména (`folder`, `document-save`, `appli
 | `SvecStudio-White` | v1.1 | pevně bílé `#ffffff` |
 | `SvecStudio-Black` | v1.2 | pevně černé `#000000` |
 
-Každá varianta obsahuje ~2 200 ikon napříč kontexty `apps`, `places`, `actions`, `mimetypes`, `devices`, `status`, `emblems`, `intl`.
+Každá varianta obsahuje ~2 350 ikon napříč kontexty `apps`, `places`, `actions`, `mimetypes`, `devices`, `status`, `emblems`, `preferences`, `applets`, `intl`.
 
 Accent varianta používá stejný mechanismus jako Breeze (`<style id="current-color-scheme">` + `class="ColorScheme-Accent"` + `FollowsColorScheme=true`), mimo KDE se renderuje fallback `#3daee9`.
+
+## Screenshots — všech 531 ikon
+
+| Accent | White | Black |
+|--------|-------|-------|
+| ![Accent](screenshots/screenshots-accent.png) | ![White](screenshots/screenshots-white-on-dark.png) | ![Black](screenshots/screenshots-black-on-light.png) |
 
 ## Instalace
 
