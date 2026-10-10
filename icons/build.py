@@ -1682,6 +1682,11 @@ FDO_MAP: dict[str, dict[str, str]] = {
         "redshift-status-off": "svec-sc-moon-stars",
         "kdeconnect-tray": "svec-sc-device-mobile",
         "kdeconnect-tray-battery": "svec-sc-device-mobile",
+        # qbittorrent-tray* se neinstaluje z Breeze (qBittorrent ho dodává přímo do
+        # hicolor), takže breeze_completions() ho nenajde — mapujeme ručně.
+        "qbittorrent-tray": "svec-sc-download",
+        "qbittorrent-tray-light": "svec-sc-download",
+        "qbittorrent-tray-dark": "svec-sc-download",
         "drive-removable-media-mounted": "svec-sc-usb",
         "media-optical-mounted": "svec-sc-disc",
     },
