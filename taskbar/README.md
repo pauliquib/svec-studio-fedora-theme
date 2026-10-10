@@ -1,6 +1,6 @@
-# Expanding Icons Task Manager for KDE Plasma 6
+# Svec Studio Taskbar for KDE Plasma 6
 
-Part of [Svec Studio Fedora theme](../README.md). In Plasma the widget is listed as **Expanding Icons Task Manager**.
+In Plasma the widget is listed as **Expanding Icons Task Manager** (Czech: *Správce úloh s rozbalovacími ikonami*).
 
 [![Plasma 6](https://img.shields.io/badge/KDE%20Plasma-6.x-1d99f3?logo=kde&logoColor=white)](https://kde.org/plasma-desktop/)
 [![QML](https://img.shields.io/badge/QML-Qt%206-41cd52?logo=qt&logoColor=white)](https://doc.qt.io/qt-6/qtqml-index.html)
@@ -48,6 +48,10 @@ moved from HTML/CSS/JS to QML.
   the stock task manager.
 - **Right click** opens a menu with new instance, pin/unpin, mute, minimize, maximize, close and
   the applet settings.
+- **Drag to close**: pull a running task's icon away from the panel toward the screen center. The
+  icon's ghost stays under the cursor where it was grabbed, the screen gradually dims, and halfway
+  to the center a red cross appears in the middle; releasing then
+  closes the window (or every window of a group), releasing earlier cancels it. Can be turned off.
 - Dragging files over a task raises its window. Dropping files opens them with that application,
   and dropping a `.desktop` file pins it.
 - **Meta+1…9** activates the tasks, and an auto-hiding panel shows up when a window wants attention.
@@ -57,15 +61,15 @@ moved from HTML/CSS/JS to QML.
 ## Installation
 
 ```sh
-git clone https://github.com/pauliquib/svec-studio-fedora-theme.git
-cd svec-studio-fedora-theme/taskbar
+git clone https://github.com/pauliquib/svec-studio-taskbar.git
+cd svec-studio-taskbar
 ./install.sh
 ```
 
 Then add **Expanding Icons Task Manager** to a panel: Edit Mode → Add Widgets. You will probably want to
 remove the stock Task Manager from that panel.
 
-To update, run `git pull` in the repository root and then `./install.sh` in this folder. To uninstall, run `kpackagetool6 -t Plasma/Applet -r org.psvec.chiptasks`.
+To update, run `git pull && ./install.sh`. To uninstall, run `kpackagetool6 -t Plasma/Applet -r org.psvec.chiptasks`.
 
 ### Fully transparent panel
 
@@ -124,6 +128,7 @@ It works by setting the panel containment's `backgroundHints` to `NoBackground`.
 | Show only tasks from the current desktop / activity / screen, or minimized only | on / on / on / off |
 | Unhide an auto-hiding panel when a window wants attention | on |
 | New tasks appear to the right / left | right |
+| Dragging a task toward the screen center closes it | on |
 
 ### Readability
 

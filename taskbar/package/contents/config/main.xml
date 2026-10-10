@@ -170,5 +170,25 @@
     <entry name="reverseMode" type="Bool">
       <default>false</default>
     </entry>
+    <!-- Every icon gets the same hover zone, whatever its label length -->
+    <entry name="equalHoverZones" type="Bool">
+      <default>true</default>
+    </entry>
+    <!-- Near a zone border the hovered pill shrinks while the neighbour grows -->
+    <entry name="hoverTransition" type="Bool">
+      <default>true</default>
+    </entry>
+    <!-- Part of each half zone, from its border inward, where the blend happens, in % -->
+    <entry name="hoverTransitionWidth" type="Int">
+      <default>40</default>
+    </entry>
+    <!-- Expand / collapse animation speed, in % of the default -->
+    <entry name="hoverAnimationSpeed" type="Int">
+      <default>100</default>
+    </entry>
+    <!-- Dragging a running task away from the panel, toward the screen center, closes it -->
+    <entry name="dragToClose" type="Bool">
+      <default>true</default>
+    </entry>
   </group>
 </kcfg>

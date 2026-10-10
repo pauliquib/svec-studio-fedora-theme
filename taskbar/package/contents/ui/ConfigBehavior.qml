@@ -18,6 +18,32 @@ KCM.SimpleKCM {
     property alias cfg_onlyMinimized: onlyMinimized.checked
     property alias cfg_unhideOnAttention: unhideOnAttention.checked
     property bool cfg_reverseMode
+    property alias cfg_equalHoverZones: equalHoverZones.checked
+    property alias cfg_hoverTransition: hoverTransition.checked
+    property alias cfg_hoverTransitionWidth: hoverTransitionWidth.value
+    property alias cfg_hoverAnimationSpeed: hoverAnimationSpeed.value
+
+    // Slider with its value shown next to it (same as on the Appearance page)
+    component ValueSlider: RowLayout {
+        id: valueSlider
+        property real value
+        property alias from: slider.from
+        property alias to: slider.to
+        property real stepSize: 1
+        property string unit: ""
+
+        QQC2.Slider {
+            id: slider
+            Layout.preferredWidth: Kirigami.Units.gridUnit * 9
+            value: valueSlider.value
+            onMoved: valueSlider.value = Math.round(value / valueSlider.stepSize) * valueSlider.stepSize
+        }
+        QQC2.Label {
+            Layout.minimumWidth: Kirigami.Units.gridUnit * 3
+            text: slider.value.toFixed(0) + " " + unit
+        }
+    }
+    property alias cfg_dragToClose: dragToClose.checked
 
     Kirigami.FormLayout {
         QQC2.ComboBox {
@@ -93,6 +119,70 @@ KCM.SimpleKCM {
             id: wheelSkipMinimized
             enabled: wheelMode.currentIndex > 0
             text: i18n("Skip minimized tasks")
+        }
+
+        QQC2.CheckBox {
+            id: equalHoverZones
+            Kirigami.FormData.label: i18n("Hovering:")
+            text: i18n("Same hover area for every icon")
+        }
+
+        QQC2.Label {
+            Layout.fillWidth: true
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+            wrapMode: Text.WordWrap
+            font: Kirigami.Theme.smallFont
+            opacity: 0.7
+            text: i18n("When off, a task with a long label takes up a larger area and can make a neighbour with a short label hard to reach.")
+        }
+
+        QQC2.CheckBox {
+            id: hoverTransition
+            enabled: equalHoverZones.checked
+            text: i18n("Blend smoothly into the neighbouring icon near the edge")
+        }
+
+        ValueSlider {
+            id: hoverTransitionWidth
+            Kirigami.FormData.label: i18n("Transition width:")
+            enabled: equalHoverZones.checked && hoverTransition.checked
+            from: 10
+            to: 100
+            stepSize: 5
+            unit: "%"
+        }
+
+        ValueSlider {
+            id: hoverAnimationSpeed
+            Kirigami.FormData.label: i18n("Animation speed:")
+            from: 25
+            to: 300
+            stepSize: 5
+            unit: "%"
+        }
+
+        QQC2.Label {
+            Layout.fillWidth: true
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+            wrapMode: Text.WordWrap
+            font: Kirigami.Theme.smallFont
+            opacity: 0.7
+            text: i18n("Transition width is the part of each icon's hover area, measured from its edge, in which the label hands over to the neighbour. 100 % blends across the whole area.")
+        }
+
+        QQC2.CheckBox {
+            id: dragToClose
+            Kirigami.FormData.label: i18n("Dragging a task:")
+            text: i18n("Toward the screen center closes it")
+        }
+
+        QQC2.Label {
+            Layout.fillWidth: true
+            Layout.maximumWidth: Kirigami.Units.gridUnit * 20
+            wrapMode: Text.WordWrap
+            font: Kirigami.Theme.smallFont
+            opacity: 0.7
+            text: i18n("Pull a running task's icon toward the screen center. The screen dims and a red cross appears; releasing then closes it, releasing earlier cancels. A group closes all its windows.")
         }
 
         Item { Kirigami.FormData.isSection: true }

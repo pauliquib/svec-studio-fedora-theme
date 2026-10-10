@@ -323,6 +323,24 @@ PlasmoidItem {
         }
     }
 
+    // ---- drag to close --------------------------------------------------------------------
+
+    // Full-screen feedback: dims toward the center, a red cross once armed
+    // Created only while a task is pulled; a hidden top-level window living in
+    // the panel's scene from startup stalled the panel on the first hover
+    Loader {
+        id: closeOverlayLoader
+        active: false
+        sourceComponent: CloseOverlay {
+            geometry: Plasmoid.containment.screenGeometry
+            // Unless a new pull has started while it was fading out
+            onFinished: Qt.callLater(() => {
+                if (closeOverlayLoader.item && !closeOverlayLoader.item.active) closeOverlayLoader.active = false
+            })
+        }
+    }
+    readonly property var closeOverlay: closeOverlayLoader.item
+
     // ---- context menus -----------------------------------------------------------------
 
     property Item menuChip: null
@@ -436,7 +454,13 @@ PlasmoidItem {
         // Web values 56 / 110 / 28 px against a 37.6 px slot
         readonly property real fullRadius: root.slotSize * 1.5
         readonly property real fadeRadius: root.slotSize * 2.9
-        readonly property real stickyBias: root.slotSize * 0.75
+        // Equal hover zones: each icon owns one slot pitch of its resting position,
+        // so a long label cannot swallow its neighbours. The expanded pill stays
+        // centred on that slot and is wider than the zone, so it is always under
+        // the pointer. A small bias is enough to stop flicker at zone borders.
+        readonly property bool equalZones: root.cfg.equalHoverZones
+        readonly property real zoneHalf: (root.slotSize + root.spacing) / 2
+        readonly property real stickyBias: root.slotSize * (equalZones ? 0.2 : 0.75)
         readonly property bool reducedMotion: Kirigami.Units.longDuration <= 1
 
         property int stickyIndex: -1
@@ -488,6 +512,21 @@ PlasmoidItem {
             return best
         }
 
+        // Chip that hover, clicks, wheel and drops apply to: the hovered (expanded)
+        // one while the pointer is in its zone, otherwise the chip under the pointer
+        function chipAt(px, py) {
+            if (!equalZones) return chipUnder(px, py)
+            const p = mainCoord(px, py)
+            const list = chips()
+            const sticky = stickyIndex >= 0 ? list[stickyIndex] : null
+            if (sticky && Math.abs(p - sticky.slotCenter) <= zoneHalf + stickyBias) return sticky
+            // No hover state yet (e.g. a file dragged in): plain slot lookup
+            for (const c of list) {
+                if (Math.abs(p - c.slotCenter) <= zoneHalf) return c
+            }
+            return chipUnder(px, py)
+        }
+
         function setExpand(c, value) {
             const v = Math.max(0, Math.min(1, value))
             c.expand = v
@@ -521,7 +560,8 @@ PlasmoidItem {
                     continue
                 }
                 // Reach full readability quickly; ease out more slowly when leaving
-                const rate = 1 - Math.pow(1 - (delta > 0 ? 0.22 : 0.12), frames)
+                const base = Math.min(0.9, (delta > 0 ? 0.22 : 0.12) * root.cfg.hoverAnimationSpeed / 100)
+                const rate = 1 - Math.pow(1 - base, frames)
                 setExpand(c, c.expand + delta * rate)
                 needsMore = true
             }
@@ -563,18 +603,36 @@ PlasmoidItem {
                 }
             }
 
-            // Prefer the chip under the cursor (covers the expanded label area)
-            const under = chipUnder(px, py)
+            // Classic zones: prefer the chip under the cursor (covers the expanded label area)
+            const under = equalZones ? null : chipUnder(px, py)
             if (under) {
                 nearest = list.indexOf(under)
                 nearestDist = Math.min(dists[nearest], fullRadius)
             }
 
+            // Near the border of the hovered zone, hand over gradually: the hovered
+            // pill shrinks while the neighbour on that side grows, meeting at 50/50
+            // on the border itself so crossing it causes no jump
+            let blendIndex = -1
+            let blend = 0
+            if (equalZones && root.cfg.hoverTransition && nearest >= 0 && nearestDist <= fullRadius) {
+                const off = p - list[nearest].slotCenter
+                const band = Math.max(0.05, root.cfg.hoverTransitionWidth / 100)
+                const d = Math.max(0, Math.min(1, (Math.abs(off) / zoneHalf - (1 - band)) / band))
+                const neighbour = d > 0 ? chipAtPosition(list[nearest].position + (off < 0 ? -1 : 1)) : null
+                if (neighbour) {
+                    blendIndex = list.indexOf(neighbour)
+                    blend = 0.5 * d * d * (3 - 2 * d)
+                }
+            }
+
             for (let j = 0; j < list.length; j++) {
-                if (j !== nearest || nearestDist >= fadeRadius) {
+                if (j === blendIndex) {
+                    list[j].target = blend
+                } else if (j !== nearest || nearestDist >= fadeRadius) {
                     list[j].target = 0
                 } else if (nearestDist <= fullRadius) {
-                    list[j].target = 1
+                    list[j].target = 1 - blend
                 } else {
                     const t = 1 - (nearestDist - fullRadius) / (fadeRadius - fullRadius)
                     list[j].target = t * t * (3 - 2 * t)
@@ -582,7 +640,7 @@ PlasmoidItem {
             }
 
             stickyIndex = nearestDist < fadeRadius ? nearest : -1
-            setHovered(under)
+            setHovered(equalZones ? chipAt(px, py) : under)
             kick()
         }
 
@@ -677,7 +735,18 @@ PlasmoidItem {
                 x: root.vertical ? (rail.width - root.slotSize) / 2 : slotCenter + nudge - width / 2
                 y: root.vertical ? slotCenter - root.slotSize / 2 : (rail.height - root.slotSize) / 2
                 z: 1 + expand * 20
-                opacity: pointer.dragChip === chip ? 0.6 : 1
+                opacity: pointer.dragChip === chip ? 0.6 : 1 - pull * 0.3
+
+                // Drag-to-close progress (0–1): the chip lifts toward the screen
+                // center and tints red
+                readonly property real pull: pointer.pullChip === chip ? pointer.pullProgress : 0
+                transform: Translate {
+                    readonly property real lift: chip.pull * Math.max(2, (root.thickness - root.iconSize) / 2)
+                    x: Plasmoid.location === PlasmaCore.Types.LeftEdge ? lift
+                     : Plasmoid.location === PlasmaCore.Types.RightEdge ? -lift : 0
+                    y: Plasmoid.location === PlasmaCore.Types.BottomEdge ? -lift
+                     : Plasmoid.location === PlasmaCore.Types.TopEdge ? lift : 0
+                }
 
                 // Audio badge hit test in rail coordinates
                 function hitsAudioBadge(px, py) {
@@ -700,6 +769,15 @@ PlasmoidItem {
                     radius: Math.round(root.slotSize * 0.22)
                     color: Kirigami.Theme.textColor
                     opacity: root.cfg.showHoverPill ? chip.expand * 0.1 : 0
+                    visible: opacity > 0
+                }
+
+                // Drag-to-close tint
+                Rectangle {
+                    anchors.fill: parent
+                    radius: Math.round(root.slotSize * 0.22)
+                    color: Kirigami.Theme.negativeTextColor
+                    opacity: chip.pull >= 1 ? 0.45 : chip.pull * 0.25
                     visible: opacity > 0
                 }
 
@@ -898,27 +976,121 @@ PlasmoidItem {
             property Item pressChip: null
             property Item dragChip: null
             property real pressCoord: 0
+            property real pressPull: 0
+            property real pressX: 0
+            property real pressY: 0
             property bool suppressClick: false
             property real wheelDelta: 0
 
+            // Drag to close: the pulled chip and how far it is (1 = release closes it)
+            property Item pullChip: null
+            property real pullProgress: 0
+            // Armed halfway between the panel and the screen center
+            readonly property real pullThreshold: {
+                const g = Plasmoid.containment.screenGeometry
+                const half = (root.vertical ? g.width : g.height) / 2 - root.thickness
+                return Math.max(root.slotSize * 2, Kirigami.Units.gridUnit * 4, half * 0.5)
+            }
+
+            // Distance of a point beyond the rail edge that faces the screen center
+            function pullDistance(px, py) {
+                switch (Plasmoid.location) {
+                case PlasmaCore.Types.BottomEdge: return -py
+                case PlasmaCore.Types.TopEdge: return py - rail.height
+                case PlasmaCore.Types.LeftEdge: return px - rail.width
+                case PlasmaCore.Types.RightEdge: return -px
+                default: // Floating or on the desktop: either side
+                    return root.vertical ? Math.max(-px, px - rail.width) : Math.max(-py, py - rail.height)
+                }
+            }
+
+            function canPull(c) {
+                return root.cfg.dragToClose && c !== null && !c.isLauncher
+            }
+
+            function startPull(c) {
+                if (dragChip) tasksModel.syncLaunchers()
+                dragChip = null
+                pullChip = c
+                rail.clearTargets()
+                root.hidePreview()
+                // The ghost keeps the spot where the cursor holds the icon; a grab on
+                // the label is pulled in to the icon's edge so the cursor stays on it
+                const ghostSize = Math.round(root.iconSize * 1.25)
+                const reach = ghostSize / 2 - 2
+                const clamp = v => Math.max(-reach, Math.min(reach, v))
+                const iconCenter = c.mapToGlobal(root.chipPadding + root.iconSize / 2, c.height / 2)
+                const grab = rail.mapToGlobal(pressX, pressY)
+                closeOverlayLoader.active = true
+                const closeOverlay = root.closeOverlay
+                closeOverlay.grabOffset = Qt.point(clamp(grab.x - iconCenter.x), clamp(grab.y - iconCenter.y))
+                closeOverlay.ghostIcon = c.model.decoration
+                closeOverlay.ghostSize = ghostSize
+                closeOverlay.active = true
+            }
+
+            function updatePull(px, py) {
+                pullProgress = Math.max(0, Math.min(1, pullDistance(px, py) / pullThreshold))
+                const closeOverlay = root.closeOverlay
+                if (!closeOverlay) return
+                closeOverlay.cursor = rail.mapToGlobal(px, py)
+                closeOverlay.progress = pullProgress
+                closeOverlay.armed = pullProgress >= 1
+            }
+
+            function endPull(close) {
+                const closeOverlay = root.closeOverlay
+                if (closeOverlay) {
+                    if (close) closeOverlay.confirm()
+                    else closeOverlay.cancel()
+                    closeOverlay.armed = false
+                    closeOverlay.progress = 0
+                }
+                pullChip = null
+                pullProgress = 0
+            }
+
             onPositionChanged: mouse => {
-                if (pressChip && (mouse.buttons & Qt.LeftButton) && root.manualSort) {
+                if (pullChip) {
+                    updatePull(mouse.x, mouse.y)
+                    return
+                }
+                if (pressChip && (mouse.buttons & Qt.LeftButton)) {
                     const p = rail.mainCoord(mouse.x, mouse.y)
-                    if (!dragChip && Math.abs(p - pressCoord) > Qt.styleHints.startDragDistance) {
-                        dragChip = pressChip
-                        root.hidePreview()
-                    }
-                    if (dragChip) {
-                        reorderTo(p)
+                    const along = Math.abs(p - pressCoord)
+                    const away = pullDistance(mouse.x, mouse.y) - pressPull
+                    const threshold = Qt.styleHints.startDragDistance
+                    // Mostly toward the screen center, or out of the panel while reordering
+                    if (canPull(pressChip) && ((!dragChip && away > threshold && away > along)
+                                               || (dragChip && pullDistance(mouse.x, mouse.y) > threshold))) {
+                        startPull(pressChip)
+                        updatePull(mouse.x, mouse.y)
                         return
+                    }
+                    if (root.manualSort) {
+                        if (!dragChip && along > threshold) {
+                            dragChip = pressChip
+                            root.hidePreview()
+                        }
+                        if (dragChip) {
+                            reorderTo(p)
+                            return
+                        }
                     }
                 }
                 rail.pointAt(mouse.x, mouse.y)
             }
-            onExited: rail.clearTargets()
+            onExited: {
+                if (!pullChip) rail.clearTargets()
+            }
+            onCanceled: {
+                endPull(false)
+                dragChip = null
+                pressChip = null
+            }
 
             onPressed: mouse => {
-                const c = rail.chipUnder(mouse.x, mouse.y)
+                const c = rail.chipAt(mouse.x, mouse.y)
                 // Empty space: let Plasma show the default applet menu
                 if (!c) {
                     mouse.accepted = false
@@ -927,9 +1099,19 @@ PlasmoidItem {
                 suppressClick = false
                 pressChip = mouse.button === Qt.LeftButton ? c : null
                 pressCoord = rail.mainCoord(mouse.x, mouse.y)
+                pressPull = pullDistance(mouse.x, mouse.y)
+                pressX = mouse.x
+                pressY = mouse.y
                 previewShowTimer.stop()
             }
-            onReleased: {
+            onReleased: mouse => {
+                if (pullChip) {
+                    const close = pullProgress >= 1
+                    if (close) tasksModel.requestClose(root.taskIndex(pullChip.index))
+                    endPull(close)
+                    suppressClick = true
+                    if (containsMouse) rail.pointAt(mouse.x, mouse.y)
+                }
                 if (dragChip) {
                     tasksModel.syncLaunchers()
                     suppressClick = true
@@ -939,7 +1121,7 @@ PlasmoidItem {
             }
             onClicked: mouse => {
                 if (suppressClick) return
-                const c = rail.chipUnder(mouse.x, mouse.y)
+                const c = rail.chipAt(mouse.x, mouse.y)
                 if (!c) return
                 if (mouse.button === Qt.MiddleButton) {
                     root.middleClick(c)
@@ -962,7 +1144,7 @@ PlasmoidItem {
                 while (Math.abs(wheelDelta) >= 120) {
                     const step = wheelDelta > 0 ? -1 : 1
                     wheelDelta -= -step * 120
-                    cycleWindows(step, rail.chipUnder(wheel.x, wheel.y))
+                    cycleWindows(step, rail.chipAt(wheel.x, wheel.y))
                 }
             }
 
@@ -1007,7 +1189,8 @@ PlasmoidItem {
 
             onEntered: drag => drag.accepted = drag.hasUrls
             onPositionChanged: drag => {
-                const c = rail.chipUnder(drag.x, drag.y)
+                rail.pointAt(drag.x, drag.y)
+                const c = rail.chipAt(drag.x, drag.y)
                 if (c !== target) {
                     target = c
                     if (c && !c.isLauncher) dragActivateTimer.restart()
@@ -1017,9 +1200,11 @@ PlasmoidItem {
             onExited: {
                 target = null
                 dragActivateTimer.stop()
+                rail.clearTargets()
             }
             onDropped: drop => {
                 dragActivateTimer.stop()
+                rail.clearTargets()
                 const urls = drop.urls.map(u => String(u))
                 const desktopFiles = urls.filter(u => u.endsWith(".desktop"))
                 if (desktopFiles.length > 0) {
