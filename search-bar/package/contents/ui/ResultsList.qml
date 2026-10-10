@@ -95,14 +95,68 @@ ListView {
                     Layout.fillWidth: true
                     spacing: 0
 
-                    PlasmaComponents3.Label {
+                    // Overflowing titles fade/elide at rest and scroll in an infinite,
+                    // seamless loop on hover (same technique as the svec-elektro.cz nav flyout:
+                    // a cloned segment placed right after the original, looped back to x:0).
+                    Item {
+                        id: titleClip
                         Layout.fillWidth: true
-                        elide: Text.ElideRight
-                        textFormat: list.highlightMatches ? Text.StyledText : Text.PlainText
-                        text: list.highlightMatches
+                        implicitHeight: titleLabel.implicitHeight
+                        clip: true
+
+                        readonly property int titleFormat: list.highlightMatches ? Text.StyledText : Text.PlainText
+                        readonly property string titleText: list.highlightMatches
                             ? Util.highlight(row.modelData.text || "",
                                              row.modelData.highlight !== undefined ? row.modelData.highlight : list.pattern)
                             : (row.modelData.text || "")
+                        readonly property bool overflowing: titleLabel.implicitWidth > titleClip.width
+                        property bool hoverReady: false
+                        readonly property bool marquee: hoverReady && overflowing
+
+                        onMarqueeChanged: if (!marquee) marqueeRow.x = 0
+
+                        Timer {
+                            interval: 250
+                            repeat: true
+                            running: content.containsMouse && titleClip.overflowing
+                            onTriggered: titleClip.hoverReady = true
+                            onRunningChanged: if (!running) titleClip.hoverReady = false
+                        }
+
+                        PlasmaComponents3.Label {
+                            anchors.fill: parent
+                            visible: !titleClip.marquee
+                            elide: Text.ElideRight
+                            textFormat: titleClip.titleFormat
+                            text: titleClip.titleText
+                        }
+
+                        Row {
+                            id: marqueeRow
+                            visible: titleClip.marquee
+                            spacing: Kirigami.Units.largeSpacing * 1.5
+
+                            PlasmaComponents3.Label {
+                                id: titleLabel
+                                textFormat: titleClip.titleFormat
+                                text: titleClip.titleText
+                                wrapMode: Text.NoWrap
+                            }
+                            PlasmaComponents3.Label {
+                                textFormat: titleClip.titleFormat
+                                text: titleClip.titleText
+                                wrapMode: Text.NoWrap
+                            }
+
+                            NumberAnimation on x {
+                                running: titleClip.marquee
+                                loops: Animation.Infinite
+                                from: 0
+                                to: -(titleLabel.implicitWidth + marqueeRow.spacing)
+                                duration: Math.max(3200, Math.min(18000,
+                                    (titleLabel.implicitWidth + marqueeRow.spacing) * 1000 / 16))
+                            }
+                        }
                     }
                     PlasmaComponents3.Label {
                         Layout.fillWidth: true

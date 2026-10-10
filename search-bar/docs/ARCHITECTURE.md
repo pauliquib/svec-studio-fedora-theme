@@ -143,6 +143,7 @@ TerminalProvider.
 | Ctrl+Enter | run the whole query in the terminal |
 | ↑ / ↓ | move selection across provider items and KRunner results |
 | Tab | replace the field text with `item.completion` of the selected item |
+| End / → (at end of text) | accept the inline "ghost text" suggestion (`core.ghostSuggestion`) |
 | Esc | clear and close |
 
 ## Gotchas

@@ -50,6 +50,23 @@ function fuzzyScore(pattern, text) {
     return Math.max(score, 1)
 }
 
+// Returns the remainder of the first entry in `list` (newest/most relevant
+// first) that starts with `text` (case-insensitive), or "" when none matches.
+// Used for inline "ghost text" suggestions, e.g. shell/fish-style command prediction.
+function prefixSuggestion(list, text) {
+    if (!text) {
+        return ""
+    }
+    const lower = String(text).toLowerCase()
+    for (const item of (list || [])) {
+        const s = String(item)
+        if (s.length > text.length && s.toLowerCase().startsWith(lower)) {
+            return s.slice(text.length)
+        }
+    }
+    return ""
+}
+
 function escapeHtml(s) {
     return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
 }

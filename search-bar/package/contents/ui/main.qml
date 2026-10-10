@@ -75,6 +75,49 @@ PlasmoidItem {
     }
     readonly property string modeQuery: query.slice(mode.prefix.length).trim()
 
+    // Inline "ghost text" suggestion (kitty/fish-style command prediction),
+    // shown after the typed text and accepted with End/Right at the end of the field.
+    readonly property string ghostSuggestion: {
+        if (!active || query.length === 0) {
+            return ""
+        }
+        if (mode.kind === "terminal") {
+            if (!cfg.terminalHistoryEnabled) {
+                return ""
+            }
+            const cmd = query.slice(mode.prefix.length).replace(/^\s+/, "")
+            return cmd.length > 0 ? Util.prefixSuggestion(cfg.terminalHistory || [], cmd) : ""
+        }
+        if (mode.kind === "default") {
+            if (!cfg.historyEnabled) {
+                return ""
+            }
+            const queries = []
+            for (const raw of cfg.history || []) {
+                try {
+                    const e = JSON.parse(raw)
+                    if (e && e.kind === "query" && typeof e.key === "string") {
+                        queries.push(e.key)
+                    }
+                } catch (err) {
+                    // skip invalid entries
+                }
+            }
+            return Util.prefixSuggestion(queries, query)
+        }
+        return ""
+    }
+
+    // Accepts `ghostSuggestion` into the query; only when the cursor is at the end.
+    function acceptGhostSuggestion() {
+        if (ghostSuggestion.length === 0 || !field
+                || field.cursorPosition !== field.text.length || field.selectedText.length > 0) {
+            return false
+        }
+        setQuery(query + ghostSuggestion)
+        return true
+    }
+
     readonly property var currentProvider: {
         switch (mode.kind) {
         case "terminal": return terminalProvider
@@ -380,6 +423,32 @@ PlasmoidItem {
                         root.setQuery(item.completion)
                     }
                     event.accepted = true
+                }
+                Keys.onRightPressed: event => { if (root.acceptGhostSuggestion()) event.accepted = true }
+                Keys.onPressed: event => {
+                    if (event.key === Qt.Key_End && root.acceptGhostSuggestion()) {
+                        event.accepted = true
+                    }
+                }
+
+                // Inline ghost-text suggestion, positioned right after the typed text.
+                TextMetrics {
+                    id: ghostMetrics
+                    font: field.font
+                    text: field.text
+                }
+                PlasmaComponents3.Label {
+                    id: ghostLabel
+                    text: root.ghostSuggestion
+                    visible: field.activeFocus && text.length > 0
+                    font: field.font
+                    opacity: 0.45
+                    elide: Text.ElideRight
+                    verticalAlignment: Text.AlignVCenter
+                    x: field.leftPadding + ghostMetrics.advanceWidth
+                    width: Math.max(0, field.width - x - field.rightPadding)
+                    height: field.height
+                    clip: true
                 }
 
                 // Clicking into the results window may briefly deactivate the panel,
